@@ -7,6 +7,21 @@ class ScannerTest(unittest.TestCase):
     def setUp(self):
         self.scanner = Scanner()
 
+    def test_scan(self):
+        code = """
+        :> for item in items
+            :> case item.id
+                :> 1)
+        print("1st item")
+                :> *)
+        print("Something else")
+        print("$(item)")
+            :> endcase
+        :> endfor
+        """
+        tokens = self.scanner.scan(code)
+        self.assertEqual(len(tokens), 14)
+
     def test__scan_lines(self):
         code = """
         :> for item in items
@@ -15,11 +30,11 @@ class ScannerTest(unittest.TestCase):
         print("1st item")
                 :> *)
         print("Something else")
-        print("...")
+        print("$(item)")
             :> endcase
         :> endfor
         """
         lines = code.split("\n")
         blocks = self.scanner._scan_lines(lines)
 
-        self.assertEquals(len(blocks), 7)
+        self.assertEqual(len(blocks), 7)
