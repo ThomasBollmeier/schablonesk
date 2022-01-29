@@ -20,7 +20,13 @@ class ScannerTest(unittest.TestCase):
         :> endfor
         """
         tokens = self.scanner.scan(code)
-        self.assertEqual(len(tokens), 14)
+        self.assertEqual(len(tokens), 16)
+
+        for token in tokens:
+            catg = token.category
+            lexeme = token.lexeme
+            line_num = token.line_num
+            print(f"@line {line_num}: <<{lexeme}>> ({catg})")
 
     def test__scan_lines(self):
         code = """

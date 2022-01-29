@@ -1,8 +1,10 @@
 class Token(object):
-    TEXT = 1
-    IDENTIFIER = 2
-    UNKNOWN = 99
+    TEXT = "TEXT"
+    IDENTIFIER = "IDENTIFIER"
+    DOT = "DOT"
+    UNKNOWN = "UNKNOWN"
 
-    def __init__(self, category, lexeme):
+    def __init__(self, category, lexeme, line_num):
         self.category = category
         self.lexeme = lexeme
+        self.line_num = line_num
