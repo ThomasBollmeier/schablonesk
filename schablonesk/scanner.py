@@ -1,6 +1,7 @@
 import os
 import re
 from schablonesk.tokens import Token
+from schablonesk.token_category import *
 
 
 class Scanner:
@@ -50,10 +51,26 @@ class _CommandBlock:
     def __init__(self):
         self.lines = []
         self.patterns = [
-            (re.compile("\\."), Token.DOT),
-            (re.compile("^[a-z_][a-z0-9_]*"), Token.IDENTIFIER)
+            (re.compile("\\."), DOT),
+            (re.compile("=="), EQ),
+            (re.compile(">"), GT),
+            (re.compile(">="), GE),
+            (re.compile("<"), LT),
+            (re.compile("<="), LE),
+            (re.compile(">"), GT),
+            (re.compile("="), ASSIGN),
+            (re.compile("^[a-z_][a-z0-9_]*"), IDENTIFIER)
         ]
         self.whitespace = re.compile("^\\s+")
+        self.keywords = {
+            "if": IF,
+            "elif": ELIF,
+            "else": ELSE ,
+            "endif": ENDIF,
+            "for": FOR,
+            "in": IN,
+            "endfor": ENDFOR
+        }
 
     def add(self, line_num, commands):
         self.lines.append((line_num, commands))
@@ -95,11 +112,20 @@ class _CommandBlock:
                     max_token_catg = token_catg
                     max_size = size
         if max_token_catg:
+            lexeme = remaining[:max_size]
+            # Check for keywords:
+            max_token_catg = self.adapt_token_catg(max_token_catg, lexeme)
             return Token(max_token_catg,
-                         remaining[:max_size],
+                         lexeme,
                          line_num), remaining[max_size:]
         else:
-            return Token(Token.UNKNOWN, remaining, line_num), ""
+            return Token(UNKNOWN, remaining, line_num), ""
+
+    def adapt_token_catg(self, token_catg, lexeme):
+        if token_catg != IDENTIFIER or lexeme not in self.keywords:
+            return token_catg
+        else:
+            return self.keywords[lexeme]
 
 
 class _TextBlock:
@@ -112,4 +138,4 @@ class _TextBlock:
         self.text += line + os.linesep
 
     def tokenize(self):
-        return [Token(Token.TEXT, self.text, self.start_line_num)]
+        return [Token(TEXT, self.text, self.start_line_num)]

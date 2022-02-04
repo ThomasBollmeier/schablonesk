@@ -1,0 +1,22 @@
+TEXT = "TEXT"
+IDENTIFIER = "IDENTIFIER"
+
+#Keywords
+IF = "IF"
+ELIF = "ELIF"
+ELSE = "ELSE"
+ENDIF = "ENDIF"
+FOR = "FOR"
+IN = "IN"
+ENDFOR = "ENDFOR"
+
+#Symbols
+DOT = "DOT"
+EQ = "EQ"
+GT = "GT"
+GE = "GE"
+LT = "LT"
+LE = "LE"
+ASSIGN = "ASSIGN"
+
+UNKNOWN = "UNKNOWN"

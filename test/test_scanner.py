@@ -1,4 +1,5 @@
 import unittest
+import os.path
 from schablonesk.scanner import Scanner
 
 
@@ -10,15 +11,26 @@ class ScannerTest(unittest.TestCase):
     def test_scan(self):
         code = """
         :> for item in items
-            :> case item.id
-                :> 1)
+            :> if item.id == 1
         print("1st item")
-                :> *)
+            :> else
         print("Something else")
         print("$(item)")
-            :> endcase
+            :> endif
         :> endfor
         """
+        tokens = self.scanner.scan(code)
+        self.assertEqual(len(tokens), 17)
+
+        for token in tokens:
+            catg = token.category
+            lexeme = token.lexeme
+            line_num = token.line_num
+            print(f"@line {line_num}: <<{lexeme}>> ({catg})")
+
+    def test_file(self):
+        file_path = os.path.dirname(__file__) + "/demo.schablonesk"
+        code = self._read_file(file_path)
         tokens = self.scanner.scan(code)
         self.assertEqual(len(tokens), 16)
 
@@ -28,19 +40,9 @@ class ScannerTest(unittest.TestCase):
             line_num = token.line_num
             print(f"@line {line_num}: <<{lexeme}>> ({catg})")
 
-    def test__scan_lines(self):
-        code = """
-        :> for item in items
-            :> case item.id
-                :> 1)
-        print("1st item")
-                :> *)
-        print("Something else")
-        print("$(item)")
-            :> endcase
-        :> endfor
-        """
-        lines = code.split("\n")
-        blocks = self.scanner._scan_lines(lines)
-
-        self.assertEqual(len(blocks), 7)
+    @staticmethod
+    def _read_file(file_path):
+        f = open(file_path, "r")
+        lines = f.readlines()
+        f.close()
+        return "".join(lines)
