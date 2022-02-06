@@ -11,12 +11,13 @@ class ScannerTest(unittest.TestCase):
     def test_scan(self):
         code = """
         :> for item in items
-            :> if item.id == 1
+            :> cond 
+                :> item.id == 1
         print("1st item")
-            :> else
+                :> else
         print("Something else")
         print("$(item)")
-            :> endif
+            :> endcond
         :> endfor
         """
         tokens = self.scanner.scan(code)

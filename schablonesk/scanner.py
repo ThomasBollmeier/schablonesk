@@ -63,10 +63,9 @@ class _CommandBlock:
         ]
         self.whitespace = re.compile("^\\s+")
         self.keywords = {
-            "if": IF,
-            "elif": ELIF,
-            "else": ELSE ,
-            "endif": ENDIF,
+            "cond": COND,
+            "else": ELSE,
+            "endcond": ENDCOND,
             "for": FOR,
             "in": IN,
             "endfor": ENDFOR
