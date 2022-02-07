@@ -16,9 +16,7 @@ class Parser(object):
         blocks = []
 
         while not self._end_of_tokens():
-            block = self._block()
-            if block is not None:
-                blocks.append(block)
+            blocks.append(self._block())
 
         return Template(blocks)
 
@@ -27,12 +25,29 @@ class Parser(object):
             return Text(self._consume())
         elif self._match(COND):
             return self._cond_block()
+        elif self._match(FOR):
+            return self._for_block()
         else:
-            self._consume()
-            return None
+            raise Exception("Expected Block")
+
+    def _for_block(self):
+        self._consume()
+        item_ident = Identifier(self._consume(IDENTIFIER))
+        self._consume(IN)
+        list_expr = self._expr()
+        blocks = []
+        while not self._end_of_tokens():
+            if self._match(ENDFOR):
+                break
+            blocks.append(self._block())
+        self._consume(ENDFOR)
+        return ForBlock(item_ident, list_expr, blocks)
+
+    def _expr(self):
+        return Identifier(self._consume(IDENTIFIER))  # TODO: reimplement
 
     def _cond_block(self):
-        self._consume(COND)
+        self._consume()
         branches = []
         while True:
             branches.append((self._condition(), self._block()))

@@ -39,6 +39,20 @@ class CondBlock(object):
         visitor.exit_cond(self)
 
 
+class ForBlock(object):
+
+    def __init__(self, item_ident, list_expr, blocks):
+        self.item_ident = item_ident
+        self.list_expr = list_expr
+        self.blocks = blocks
+
+    def accept(self, visitor):
+        visitor.enter_for(self)
+        for block in self.blocks:
+            block.accept(visitor)
+        visitor.exit_for(self)
+
+
 class Identifier(object):
 
     def __init__(self, identifier_token):
@@ -71,13 +85,19 @@ class BaseVisitor(object):
     def enter_cond(self, cond_block):
         pass
 
-    def exit_cond(self, if_block):
+    def exit_cond(self, cond_block):
         pass
 
-    def enter_cond_branch(self, if_block):
+    def enter_cond_branch(self, cond_block):
         pass
 
-    def exit_cond_branch(self, if_block):
+    def exit_cond_branch(self, cond_block):
+        pass
+
+    def enter_for(self, for_block):
+        pass
+
+    def exit_for(self, for_block):
         pass
 
     def visit_expr(self, expr):

@@ -13,7 +13,8 @@ class AstPrinter(BaseVisitor):
         ast.accept(self)
 
     def visit_text(self, text):
-        self._writeln("[...some text...]")
+        s = text.token.lexeme.strip()[:20]
+        self._writeln(f"[{s}...]")
 
     def enter_cond(self, cond_block):
         self._writeln("cond")
@@ -23,20 +24,34 @@ class AstPrinter(BaseVisitor):
         self._dedent()
         self._writeln("endcond")
 
-    def enter_cond_branch(self, if_block):
-        self._writeln("branch:")
+    def enter_cond_branch(self, cond_block):
+        self._writeln("branch")
         self._indent()
 
-    def exit_cond_branch(self, if_block):
+    def exit_cond_branch(self, cond_block):
         self._dedent()
 
+    def enter_for(self, for_block):
+        self._writeln("for")
+        self._indent()
+        self._writeln(f"item\t{self._expr_to_str(for_block.item_ident)}")
+        self._writeln(f"listexpr\t{self._expr_to_str(for_block.list_expr)}")
+
+    def exit_for(self, for_block):
+        self._dedent()
+        self._writeln("endfor")
+
     def visit_expr(self, expr):
+        self._writeln(self._expr_to_str(expr))
+
+    @staticmethod
+    def _expr_to_str(expr):
         if isinstance(expr, Identifier):
-            self._writeln(f"IDENT: {expr.ident_tok.lexeme}")
+            return f"identifier(\"{expr.ident_tok.lexeme}\")"
         elif isinstance(expr, TrueExpr):
-            self._writeln("true")
+            return "true"
         else:
-            self._writeln("some expression")
+            return "some expression"
 
     def _indent(self):
         self._indent_level += self._indent_size

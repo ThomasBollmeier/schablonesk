@@ -12,15 +12,13 @@ class ParserTest(unittest.TestCase):
 
     def test_parse(self):
         code = """
-        :> cond 
-            :> ok
-        print("Success")
-            :> else
-        print("Error")
-        :> endcond
-        :> cond is_first
-        print("Header")
-        :> endcond
+        :> for item in list
+            :> cond  
+                :> is_first
+        print("List")
+            :> endcond
+        print("Item")
+        :> endfor
         """
         ast = Parser(self.scanner.scan(code)).parse()
         self.assertIsNotNone(ast)
