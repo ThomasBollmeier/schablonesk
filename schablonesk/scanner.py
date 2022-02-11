@@ -53,12 +53,15 @@ class _CommandBlock:
         self.patterns = [
             (re.compile("\\."), DOT),
             (re.compile("=="), EQ),
+            (re.compile("<>"), NE),
             (re.compile(">"), GT),
             (re.compile(">="), GE),
             (re.compile("<"), LT),
             (re.compile("<="), LE),
             (re.compile(">"), GT),
             (re.compile("="), ASSIGN),
+            (re.compile("\\("), LPAR),
+            (re.compile("\\)"), RPAR),
             (re.compile("^[a-z_][a-z0-9_]*"), IDENTIFIER)
         ]
         self.whitespace = re.compile("^\\s+")
@@ -68,7 +71,9 @@ class _CommandBlock:
             "endcond": ENDCOND,
             "for": FOR,
             "in": IN,
-            "endfor": ENDFOR
+            "endfor": ENDFOR,
+            "and": AND,
+            "or": OR
         }
 
     def add(self, line_num, commands):

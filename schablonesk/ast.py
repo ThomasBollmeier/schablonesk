@@ -62,6 +62,34 @@ class Identifier(object):
         visitor.visit_expr(self)
 
 
+class LogicalBinExpr(object):
+
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        visitor.enter_logical_bin(self)
+        self.left.accept(visitor)
+        self.right.accept(visitor)
+        visitor.exit_logical_bin(self)
+
+
+class LogicalRelation(object):
+
+    def __init__(self, op, left, right):
+        self.op = op
+        self.left = left
+        self.right = right
+
+    def accept(self, visitor):
+        visitor.enter_logical_rel(self)
+        self.left.accept(visitor)
+        self.right.accept(visitor)
+        visitor.exit_logical_rel(self)
+
+
 class TrueExpr(object):
 
     def accept(self, visitor):
@@ -101,4 +129,16 @@ class BaseVisitor(object):
         pass
 
     def visit_expr(self, expr):
+        pass
+
+    def enter_logical_bin(self, logical_bin):
+        pass
+
+    def exit_logical_bin(self, logical_bin):
+        pass
+
+    def enter_logical_rel(self, logical_rel):
+        pass
+
+    def exit_logical_rel(self, logical_rel):
         pass

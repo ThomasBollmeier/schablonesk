@@ -21,13 +21,26 @@ class ScannerTest(unittest.TestCase):
         :> endfor
         """
         tokens = self.scanner.scan(code)
-        self.assertEqual(len(tokens), 17)
+        self.assertEqual(17, len(tokens))
+        self.print_tokens(tokens)
 
+    def test_scan_logical_expr(self):
+        code = """
+        :> cond a <= x and ( x < b or  y >= c ) and y < d or is_done
+        print("OK")
+        :> endcond
+        """
+        tokens = self.scanner.scan(code)
+        self.assertEqual(24, len(tokens))
+        self.print_tokens(tokens)
+
+    @staticmethod
+    def print_tokens(tokens):
         for token in tokens:
             catg = token.category
             lexeme = token.lexeme
             line_num = token.line_num
-            print(f"@line {line_num}: <<{lexeme}>> ({catg})")
+            print(f"@line {line_num}: '{lexeme}' ({catg})")
 
     def test_file(self):
         file_path = os.path.dirname(__file__) + "/demo.schablonesk"

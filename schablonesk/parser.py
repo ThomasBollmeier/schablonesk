@@ -60,11 +60,50 @@ class Parser(object):
         if self._match(ELSE):
             self._consume()
             return TrueExpr()
-        identifier_token = self._consume(IDENTIFIER)
-        return Identifier(identifier_token)
+        return self._logical_expr()
 
-    def _match(self, token_catg):
-        return self._tokens[self._next_idx].category == token_catg
+    def _logical_expr(self):
+        return self._disjunction()
+
+    def _disjunction(self):
+        ret = self._conjunction()
+        while self._match(OR):
+            token_or = self._consume()
+            right = self._conjunction()
+            ret = LogicalBinExpr(token_or, ret, right)
+        return ret
+
+    def _conjunction(self):
+        ret = self._logical_rel()
+        while self._match(AND):
+            token_and = self._consume()
+            right = self._logical_rel()
+            ret = LogicalBinExpr(token_and, ret, right)
+        return ret
+
+    def _logical_rel(self):
+        ret = self._primary()
+        while self._match(EQ, NE, GT, GE, LT, LE):
+            op = self._consume()
+            right = self._primary()
+            ret = LogicalRelation(op, ret, right)
+        return ret
+
+    def _primary(self):
+        if self._match(LPAR):
+            self._consume()
+            logical_expr = self._logical_expr()
+            self._consume(RPAR)
+            return logical_expr
+        else:
+            identifier_token = self._consume(IDENTIFIER)
+            return Identifier(identifier_token)
+
+    def _match(self, *token_categories):
+        for token_catg in token_categories:
+            if self._tokens[self._next_idx].category == token_catg:
+                return True
+        return False
 
     def _consume(self, token_catg=None):
         if self._end_of_tokens():

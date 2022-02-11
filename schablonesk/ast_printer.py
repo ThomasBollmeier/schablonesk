@@ -41,6 +41,20 @@ class AstPrinter(BaseVisitor):
         self._dedent()
         self._writeln("endfor")
 
+    def enter_logical_bin(self, logical_bin):
+        self._writeln(logical_bin.op.lexeme)
+        self._indent()
+
+    def exit_logical_bin(self, logical_bin):
+        self._dedent()
+
+    def enter_logical_rel(self, logical_rel):
+        self._writeln(logical_rel.op.lexeme)
+        self._indent()
+
+    def exit_logical_rel(self, logical_rel):
+        self._dedent()
+
     def visit_expr(self, expr):
         self._writeln(self._expr_to_str(expr))
 

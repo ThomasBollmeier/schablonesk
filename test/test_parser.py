@@ -25,6 +25,17 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_logical_expr(self):
+        code = """
+        :> cond a <> zero and (b == one or c <= two)
+        print("OK")
+        :> endcond
+        """
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
 
 if __name__ == "__main__":
     unittest.main()
