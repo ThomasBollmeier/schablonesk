@@ -36,6 +36,9 @@ class AstPrinter(BaseVisitor):
         self._indent()
         self._writeln(f"item\t{self._expr_to_str(for_block.item_ident)}")
         self._writeln(f"listexpr\t{self._expr_to_str(for_block.list_expr)}")
+        if for_block.filter_cond:
+            self._write("filter\t")
+            for_block.filter_cond.accept(self)
 
     def exit_for(self, for_block):
         self._dedent()
@@ -62,6 +65,8 @@ class AstPrinter(BaseVisitor):
     def _expr_to_str(expr):
         if isinstance(expr, Identifier):
             return f"identifier(\"{expr.ident_tok.lexeme}\")"
+        elif isinstance(expr, QualifiedName):
+            return str(expr)
         elif isinstance(expr, TrueExpr):
             return "true"
         else:

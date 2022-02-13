@@ -41,10 +41,11 @@ class CondBlock(object):
 
 class ForBlock(object):
 
-    def __init__(self, item_ident, list_expr, blocks):
+    def __init__(self, item_ident, list_expr, blocks, filter_cond=None):
         self.item_ident = item_ident
         self.list_expr = list_expr
         self.blocks = blocks
+        self.filter_cond = filter_cond
 
     def accept(self, visitor):
         visitor.enter_for(self)
@@ -60,6 +61,18 @@ class Identifier(object):
 
     def accept(self, visitor):
         visitor.visit_expr(self)
+
+
+class QualifiedName(object):
+
+    def __init__(self, identifier_tokens):
+        self.identifier_tokens = identifier_tokens
+
+    def accept(self, visitor):
+        visitor.visit_expr(self)
+
+    def __str__(self):
+        return ".".join(list(map(lambda ident: ident.lexeme, self.identifier_tokens)))
 
 
 class LogicalBinExpr(object):

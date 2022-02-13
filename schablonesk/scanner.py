@@ -71,6 +71,7 @@ class _CommandBlock:
             "endcond": ENDCOND,
             "for": FOR,
             "in": IN,
+            "where": WHERE,
             "endfor": ENDFOR,
             "and": AND,
             "or": OR

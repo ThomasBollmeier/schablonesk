@@ -35,13 +35,18 @@ class Parser(object):
         item_ident = Identifier(self._consume(IDENTIFIER))
         self._consume(IN)
         list_expr = self._expr()
+        if self._match(WHERE):
+            self._consume()
+            filter_cond = self._logical_expr()
+        else:
+            filter_cond = None
         blocks = []
         while not self._end_of_tokens():
             if self._match(ENDFOR):
                 break
             blocks.append(self._block())
         self._consume(ENDFOR)
-        return ForBlock(item_ident, list_expr, blocks)
+        return ForBlock(item_ident, list_expr, blocks, filter_cond)
 
     def _expr(self):
         return Identifier(self._consume(IDENTIFIER))  # TODO: reimplement
@@ -96,8 +101,17 @@ class Parser(object):
             self._consume(RPAR)
             return logical_expr
         else:
-            identifier_token = self._consume(IDENTIFIER)
-            return Identifier(identifier_token)
+            return self._qualified_name()
+
+    def _qualified_name(self):
+        identifier_tokens = [self._consume(IDENTIFIER)]
+        while self._match(DOT):
+            self._consume()
+            identifier_tokens.append(self._consume(IDENTIFIER))
+        if len(identifier_tokens) == 1:
+            return Identifier(identifier_tokens[0])
+        else:
+            return QualifiedName(identifier_tokens)
 
     def _match(self, *token_categories):
         for token_catg in token_categories:
