@@ -34,6 +34,13 @@ class ScannerTest(unittest.TestCase):
         self.assertEqual(24, len(tokens))
         self.print_tokens(tokens)
 
+    def test_scan_simple_types(self):
+        code = ":> 42 23. 1.23 'O\\'Hara'"
+
+        tokens = self.scanner.scan(code)
+        self.assertEqual(4, len(tokens))
+        self.print_tokens(tokens)
+
     @staticmethod
     def print_tokens(tokens):
         for token in tokens:

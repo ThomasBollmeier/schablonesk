@@ -54,13 +54,46 @@ class ForBlock(object):
         visitor.exit_for(self)
 
 
-class Identifier(object):
+class SingleToken(object):
 
-    def __init__(self, identifier_token):
-        self.ident_tok = identifier_token
+    def __init__(self, token):
+        self.token = token
 
     def accept(self, visitor):
         visitor.visit_expr(self)
+
+
+class Identifier(SingleToken):
+
+    def __init__(self, identifier_token):
+        SingleToken.__init__(self, identifier_token)
+
+
+class String(SingleToken):
+
+    def __init__(self, str_token):
+        SingleToken.__init__(self, str_token)
+
+    def get_str_value(self):
+        return self.token.lexeme[1:-1].replace("\\'", "'")
+
+
+class Int(SingleToken):
+
+    def __init__(self, int_token):
+        SingleToken.__init__(self, int_token)
+
+    def get_int_value(self):
+        return int(self.token.lexeme)
+
+
+class Real(SingleToken):
+
+    def __init__(self, real_token):
+        SingleToken.__init__(self, real_token)
+
+    def get_real_value(self):
+        return float(self.token.lexeme)
 
 
 class QualifiedName(object):

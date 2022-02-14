@@ -62,7 +62,10 @@ class _CommandBlock:
             (re.compile("="), ASSIGN),
             (re.compile("\\("), LPAR),
             (re.compile("\\)"), RPAR),
-            (re.compile("^[a-z_][a-z0-9_]*"), IDENTIFIER)
+            (re.compile("^[a-z_][a-z0-9_]*"), IDENTIFIER),
+            (re.compile(r"'(\\'|[^'])*'"), STRING),
+            (re.compile("\\d+"), INT),
+            (re.compile("\\d+\\.\\d*"), REAL)
         ]
         self.whitespace = re.compile("^\\s+")
         self.keywords = {

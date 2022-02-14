@@ -64,9 +64,15 @@ class AstPrinter(BaseVisitor):
     @staticmethod
     def _expr_to_str(expr):
         if isinstance(expr, Identifier):
-            return f"identifier(\"{expr.ident_tok.lexeme}\")"
+            return f"identifier(\"{expr.token.lexeme}\")"
         elif isinstance(expr, QualifiedName):
             return str(expr)
+        elif isinstance(expr, String):
+            return expr.get_str_value()
+        elif isinstance(expr, Int):
+            return str(expr.get_int_value())
+        elif isinstance(expr, Real):
+            return str(expr.get_real_value())
         elif isinstance(expr, TrueExpr):
             return "true"
         else:

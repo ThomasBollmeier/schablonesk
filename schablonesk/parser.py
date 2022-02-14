@@ -100,6 +100,12 @@ class Parser(object):
             logical_expr = self._logical_expr()
             self._consume(RPAR)
             return logical_expr
+        elif self._match(STRING):
+            return String(self._consume())
+        elif self._match(INT):
+            return Int(self._consume())
+        elif self._match(REAL):
+            return Real(self._consume())
         else:
             return self._qualified_name()
 

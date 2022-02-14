@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from schablonesk.ast_printer import AstPrinter
@@ -27,7 +28,7 @@ class ParserTest(unittest.TestCase):
 
     def test_parse_for_stmt_with_filter(self):
         code = """
-        :> for item in list where item.has_todo or day > five
+        :> for item in list where item.has_todo or day > 5
         print("Item")
         :> endfor
         """
@@ -46,6 +47,22 @@ class ParserTest(unittest.TestCase):
         self.assertIsNotNone(ast)
 
         AstPrinter().print(ast)
+
+    def test_parse_file(self):
+        file_path = os.path.dirname(__file__) + "/demo.schablonesk"
+        code = self._read_file(file_path)
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
+    @staticmethod
+    def _read_file(file_path):
+        f = open(file_path, "r")
+        lines = f.readlines()
+        f.close()
+        return "".join(lines)
 
 
 if __name__ == "__main__":
