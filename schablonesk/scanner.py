@@ -77,7 +77,9 @@ class _CommandBlock:
             "where": WHERE,
             "endfor": ENDFOR,
             "and": AND,
-            "or": OR
+            "or": OR,
+            "true": TRUE,
+            "false": FALSE
         }
 
     def add(self, line_num, commands):

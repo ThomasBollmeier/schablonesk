@@ -28,7 +28,7 @@ class ParserTest(unittest.TestCase):
 
     def test_parse_for_stmt_with_filter(self):
         code = """
-        :> for item in list where item.has_todo or day > 5
+        :> for item in list where item.has_todo == true or day > 5
         print("Item")
         :> endfor
         """

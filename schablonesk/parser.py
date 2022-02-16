@@ -63,8 +63,7 @@ class Parser(object):
 
     def _condition(self):
         if self._match(ELSE):
-            self._consume()
-            return TrueExpr()
+            return Bool(self._consume())
         return self._logical_expr()
 
     def _logical_expr(self):
@@ -106,6 +105,8 @@ class Parser(object):
             return Int(self._consume())
         elif self._match(REAL):
             return Real(self._consume())
+        elif self._match(TRUE) or self._match(FALSE):
+            return Bool(self._consume())
         else:
             return self._qualified_name()
 
@@ -120,6 +121,8 @@ class Parser(object):
             return QualifiedName(identifier_tokens)
 
     def _match(self, *token_categories):
+        if self._end_of_tokens():
+            return False
         for token_catg in token_categories:
             if self._tokens[self._next_idx].category == token_catg:
                 return True

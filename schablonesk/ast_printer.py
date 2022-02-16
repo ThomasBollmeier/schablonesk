@@ -73,8 +73,8 @@ class AstPrinter(BaseVisitor):
             return str(expr.get_int_value())
         elif isinstance(expr, Real):
             return str(expr.get_real_value())
-        elif isinstance(expr, TrueExpr):
-            return "true"
+        elif isinstance(expr, Bool):
+            return str(expr.get_bool_value())
         else:
             return "some expression"
 

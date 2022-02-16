@@ -14,6 +14,8 @@ WHERE = "WHERE"
 ENDFOR = "ENDFOR"
 OR = "OR"
 AND = "AND"
+TRUE = "TRUE"
+FALSE = "FALSE"
 
 #Symbols
 DOT = "DOT"

@@ -68,6 +68,19 @@ class Identifier(SingleToken):
     def __init__(self, identifier_token):
         SingleToken.__init__(self, identifier_token)
 
+    def get_name(self):
+        return self.token.lexeme
+
+
+class Bool(SingleToken):
+
+    def __init__(self, bool_token):
+        SingleToken.__init__(self, bool_token)
+
+    def get_bool_value(self):
+        s = self.token.lexeme
+        return s == "true" or s == "else"
+
 
 class String(SingleToken):
 
@@ -134,12 +147,6 @@ class LogicalRelation(object):
         self.left.accept(visitor)
         self.right.accept(visitor)
         visitor.exit_logical_rel(self)
-
-
-class TrueExpr(object):
-
-    def accept(self, visitor):
-        visitor.visit_expr(self)
 
 
 class BaseVisitor(object):
