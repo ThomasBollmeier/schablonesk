@@ -61,6 +61,10 @@ class AstPrinter(BaseVisitor):
     def visit_expr(self, expr):
         self._writeln(self._expr_to_str(expr))
 
+    def visit_negation(self, negation):
+        self._write("not ")
+        negation.expr.accept(self)
+
     @staticmethod
     def _expr_to_str(expr):
         if isinstance(expr, Identifier):

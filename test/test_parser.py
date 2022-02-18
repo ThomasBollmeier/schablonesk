@@ -39,7 +39,7 @@ class ParserTest(unittest.TestCase):
 
     def test_parse_logical_expr(self):
         code = """
-        :> cond a <> zero and (b == one or c <= two)
+        :> cond not (a <> zero) and (b == one or c <= two)
         print("OK")
         :> endcond
         """

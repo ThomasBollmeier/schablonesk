@@ -58,7 +58,6 @@ class _CommandBlock:
             (re.compile(">="), GE),
             (re.compile("<"), LT),
             (re.compile("<="), LE),
-            (re.compile(">"), GT),
             (re.compile("="), ASSIGN),
             (re.compile("\\("), LPAR),
             (re.compile("\\)"), RPAR),
@@ -78,6 +77,7 @@ class _CommandBlock:
             "endfor": ENDFOR,
             "and": AND,
             "or": OR,
+            "not": NOT,
             "true": TRUE,
             "false": FALSE
         }

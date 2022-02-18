@@ -1,6 +1,3 @@
-from schablonesk.values import *
-
-
 class Environment(object):
 
     def __init__(self, parent=None):
@@ -16,5 +13,5 @@ class Environment(object):
         elif self._parent is not None:
             return self._parent.get_value(name)
         else:
-            return NullValue()
+            return None
 

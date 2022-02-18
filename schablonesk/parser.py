@@ -86,12 +86,19 @@ class Parser(object):
         return ret
 
     def _logical_rel(self):
-        ret = self._primary()
+        ret = self._negation()
         while self._match(EQ, NE, GT, GE, LT, LE):
             op = self._consume()
-            right = self._primary()
+            right = self._negation()
             ret = LogicalRelation(op, ret, right)
         return ret
+
+    def _negation(self):
+        if self._match(NOT):
+            self._consume()
+            return Negation(self._primary())
+        else:
+            return self._primary()
 
     def _primary(self):
         if self._match(LPAR):

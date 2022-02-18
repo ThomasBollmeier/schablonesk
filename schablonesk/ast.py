@@ -149,6 +149,15 @@ class LogicalRelation(object):
         visitor.exit_logical_rel(self)
 
 
+class Negation(object):
+
+    def __init__(self, expr):
+        self.expr = expr
+
+    def accept(self, visitor):
+        visitor.visit_negation(self)
+
+
 class BaseVisitor(object):
 
     def __init__(self):
@@ -194,4 +203,7 @@ class BaseVisitor(object):
         pass
 
     def exit_logical_rel(self, logical_rel):
+        pass
+
+    def visit_negation(self, negation):
         pass

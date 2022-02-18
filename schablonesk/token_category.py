@@ -16,6 +16,7 @@ OR = "OR"
 AND = "AND"
 TRUE = "TRUE"
 FALSE = "FALSE"
+NOT = "NOT"
 
 #Symbols
 DOT = "DOT"
