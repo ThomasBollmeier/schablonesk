@@ -20,6 +20,11 @@ class Text(object):
 
     token = property(get_token)
 
+    def _get_content(self):
+        return self._token.lexeme
+
+    content = property(_get_content)
+
     def accept(self, visitor):
         visitor.visit_text(self)
 

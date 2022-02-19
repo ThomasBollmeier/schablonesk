@@ -1,4 +1,7 @@
 from schablonesk.ast import *
+from schablonesk.config import Config
+from schablonesk.scanner import Scanner
+from schablonesk.parser import Parser
 
 
 class Interpreter(BaseVisitor):
@@ -33,6 +36,18 @@ class Interpreter(BaseVisitor):
             raise Exception(f"Line {logical_rel.op.line_num}: Unknown operator {op}")
         self._stack.append(result)
 
+    def exit_logical_bin(self, logical_bin):
+        right = self._stack.pop()
+        left = self._stack.pop()
+        op = logical_bin.op.lexeme
+        if op == "or":
+            result = left or right
+        elif op == "and":
+            result = left and right
+        else:
+            raise Exception(f"Line {logical_bin.op.line_num}: Unknown operator {op}")
+        self._stack.append(result)
+
     def visit_negation(self, negation):
         negation.expr.accept(self)
         value = self._stack.pop()
@@ -55,5 +70,33 @@ class Interpreter(BaseVisitor):
             self._stack.append(expr.get_str_value())
         else:
             raise Exception(f"Line {expr.token.line_num}: Unsupported expression {expr.token.lexeme}")
+
+    def visit_text(self, text):
+        config = Config.get()
+        begin, end = config.get_templ_str_delimiters()
+        cmd_line_begin = config.get_cmd_line_begin()
+        content = text.content
+        result = ""
+        search_pos = 0
+        while True:
+            pos = content.find(begin, search_pos)
+            if pos != -1:
+                result += content[search_pos:pos]
+                search_pos = pos + len(begin)
+                pos = content.find(end, search_pos)
+                if pos != -1:
+                    expr_str = cmd_line_begin + content[search_pos:pos]
+                    ast = Parser(Scanner().scan(expr_str)).parse_expr()
+                    result += str(self.eval(ast))
+                    search_pos = pos + len(end)
+                else:
+                    result += content[search_pos:]
+                    break
+            else:
+                result += content[search_pos:]
+                break
+        self._stack.append(result)
+
+
 
 

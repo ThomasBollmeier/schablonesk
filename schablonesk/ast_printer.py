@@ -13,7 +13,7 @@ class AstPrinter(BaseVisitor):
         ast.accept(self)
 
     def visit_text(self, text):
-        s = text.token.lexeme.strip()[:20]
+        s = text.content.strip()[:20]
         self._writeln(f"[{s}...]")
 
     def enter_cond(self, cond_block):

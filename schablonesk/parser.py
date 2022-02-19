@@ -12,6 +12,9 @@ class Parser(object):
     def parse(self):
         return self._template()
 
+    def parse_expr(self):
+        return self._expr()
+
     def _template(self):
         blocks = []
 

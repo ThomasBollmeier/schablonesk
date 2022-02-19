@@ -2,12 +2,14 @@ import os
 import re
 from schablonesk.tokens import Token
 from schablonesk.token_category import *
+from schablonesk.config import Config
 
 
 class Scanner:
 
     def __init__(self):
-        self.cmd_line_begin = re.compile("^\\s*:>(.+)")
+        pattern = Config.get().get_cmd_line_begin()
+        self.cmd_line_begin = re.compile("^\\s*" + pattern + "(.+)")
 
     def scan(self, code):
         ret = []
@@ -145,7 +147,10 @@ class _TextBlock:
         self.start_line_num = start_line_num
 
     def add_text_line(self, line):
-        self.text += line + os.linesep
+        if self.text:
+            self.text += line + os.linesep
+        else:
+            self.text = line
 
     def tokenize(self):
         return [Token(TEXT, self.text, self.start_line_num)]
