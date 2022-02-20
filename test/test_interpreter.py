@@ -200,3 +200,24 @@ class InterpreterTest(unittest.TestCase):
         value = interpreter.eval(ast)
 
         self.assertEqual(value, "Guten Tag, Herbert Mustermann!")
+
+    def test_cond_block(self):
+
+        global_env = Environment()
+        global_env.set_value("input", 42)
+        global_env.set_value("someone_asked", True)
+        interpreter = Interpreter(global_env)
+
+        code = """:> cond 
+            :> input == 42
+                :> cond someone_asked
+        The answer to everything: $(input).
+                :> endcond
+            :> else
+        Some random number ($(input)).
+        :> endcond"""
+
+        ast = self.create_parser(code)._block()
+        value = interpreter._eval_cond_block(ast)
+
+        self.assertEqual(value.strip(), "The answer to everything: 42.")

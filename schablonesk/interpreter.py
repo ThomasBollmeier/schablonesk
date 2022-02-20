@@ -12,9 +12,12 @@ class Interpreter(BaseVisitor):
         self._stack = []
 
     def eval(self, ast):
-        self._stack = []
-        ast.accept(self)
-        return self._stack.pop()
+        if isinstance(ast, CondBlock):
+            return self._eval_cond_block(ast)
+        else:
+            self._stack = []
+            ast.accept(self)
+            return self._stack.pop()
 
     def exit_logical_rel(self, logical_rel):
         right = self._stack.pop()
@@ -96,6 +99,13 @@ class Interpreter(BaseVisitor):
                 result += content[search_pos:]
                 break
         self._stack.append(result)
+
+    def _eval_cond_block(self, cond_block):
+        for condition, block in cond_block.branches:
+            if self.eval(condition):
+                return self.eval(block)
+        return ""
+
 
 
 

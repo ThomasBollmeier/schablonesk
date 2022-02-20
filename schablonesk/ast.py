@@ -3,6 +3,9 @@ class Template(object):
     def __init__(self, blocks):
         self._blocks = blocks
 
+    def get_num_blocks(self):
+        return len(self._blocks)
+
     def accept(self, visitor):
         visitor.enter_template(self)
         for block in self._blocks:
