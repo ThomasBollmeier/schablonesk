@@ -71,14 +71,8 @@ class AstPrinter(BaseVisitor):
             return f"identifier(\"{expr.token.lexeme}\")"
         elif isinstance(expr, QualifiedName):
             return str(expr)
-        elif isinstance(expr, String):
-            return expr.get_str_value()
-        elif isinstance(expr, Int):
-            return str(expr.get_int_value())
-        elif isinstance(expr, Real):
-            return str(expr.get_real_value())
-        elif isinstance(expr, Bool):
-            return str(expr.get_bool_value())
+        elif isinstance(expr, SimpleValue):
+            return str(expr.get_value())
         else:
             return "some expression"
 

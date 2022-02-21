@@ -10,10 +10,16 @@ class Parser(object):
         self._end_idx = len(self._tokens) - 1
 
     def parse(self):
-        return self._template()
+        ret = self._template()
+        if not self._end_of_tokens():
+            raise Exception("Unexpected end of parse")
+        return ret
 
     def parse_expr(self):
-        return self._expr()
+        ret = self._expr()
+        if not self._end_of_tokens():
+            raise Exception("Unexpected end of parse")
+        return ret
 
     def _template(self):
         blocks = []
@@ -52,7 +58,7 @@ class Parser(object):
         return ForBlock(item_ident, list_expr, blocks, filter_cond)
 
     def _expr(self):
-        return Identifier(self._consume(IDENTIFIER))  # TODO: reimplement
+        return self._logical_expr()
 
     def _cond_block(self):
         self._consume()

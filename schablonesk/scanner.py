@@ -148,7 +148,7 @@ class _TextBlock:
 
     def add_text_line(self, line):
         if self.text:
-            self.text += line + os.linesep
+            self.text += os.linesep + line
         else:
             self.text = line
 

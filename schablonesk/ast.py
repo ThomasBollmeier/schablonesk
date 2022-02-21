@@ -1,14 +1,11 @@
 class Template(object):
 
     def __init__(self, blocks):
-        self._blocks = blocks
-
-    def get_num_blocks(self):
-        return len(self._blocks)
+        self.blocks = blocks
 
     def accept(self, visitor):
         visitor.enter_template(self)
-        for block in self._blocks:
+        for block in self.blocks:
             block.accept(visitor)
         visitor.exit_template(self)
 
@@ -80,40 +77,49 @@ class Identifier(SingleToken):
         return self.token.lexeme
 
 
-class Bool(SingleToken):
+class SimpleValue(SingleToken):
+
+    def __init__(self, token):
+        SingleToken.__init__(self, token)
+
+    def get_value(self):
+        raise Exception("Not implemented")
+
+
+class Bool(SimpleValue):
 
     def __init__(self, bool_token):
-        SingleToken.__init__(self, bool_token)
+        SimpleValue.__init__(self, bool_token)
 
-    def get_bool_value(self):
+    def get_value(self):
         s = self.token.lexeme
         return s == "true" or s == "else"
 
 
-class String(SingleToken):
+class String(SimpleValue):
 
     def __init__(self, str_token):
-        SingleToken.__init__(self, str_token)
+        SimpleValue.__init__(self, str_token)
 
-    def get_str_value(self):
+    def get_value(self):
         return self.token.lexeme[1:-1].replace("\\'", "'")
 
 
-class Int(SingleToken):
+class Int(SimpleValue):
 
     def __init__(self, int_token):
-        SingleToken.__init__(self, int_token)
+        SimpleValue.__init__(self, int_token)
 
-    def get_int_value(self):
+    def get_value(self):
         return int(self.token.lexeme)
 
 
-class Real(SingleToken):
+class Real(SimpleValue):
 
     def __init__(self, real_token):
-        SingleToken.__init__(self, real_token)
+        SimpleValue.__init__(self, real_token)
 
-    def get_real_value(self):
+    def get_value(self):
         return float(self.token.lexeme)
 
 
