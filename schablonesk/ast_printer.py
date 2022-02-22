@@ -12,26 +12,27 @@ class AstPrinter(BaseVisitor):
     def print(self, ast):
         ast.accept(self)
 
+    def visit_template(self, templ):
+        for block in templ.blocks:
+            block.accept(self)
+
     def visit_text(self, text):
         s = text.content.strip()[:20]
         self._writeln(f"[{s}...]")
 
-    def enter_cond(self, cond_block):
+    def visit_cond(self, cond_block):
         self._writeln("cond")
         self._indent()
-
-    def exit_cond(self, cond_block):
+        for (cond, block) in cond_block.branches:
+            self._writeln("branch")
+            self._indent()
+            cond.accept(self)
+            block.accept(self)
+            self._dedent()
         self._dedent()
         self._writeln("endcond")
 
-    def enter_cond_branch(self, cond_block):
-        self._writeln("branch")
-        self._indent()
-
-    def exit_cond_branch(self, cond_block):
-        self._dedent()
-
-    def enter_for(self, for_block):
+    def visit_for(self, for_block):
         self._writeln("for")
         self._indent()
         self._writeln(f"item\t{self._expr_to_str(for_block.item_ident)}")
@@ -40,22 +41,24 @@ class AstPrinter(BaseVisitor):
             self._write("filter\t")
             for_block.filter_cond.accept(self)
 
-    def exit_for(self, for_block):
+        for block in for_block.blocks:
+            block.accept(self)
+
         self._dedent()
         self._writeln("endfor")
 
-    def enter_logical_bin(self, logical_bin):
+    def visit_logical_bin(self, logical_bin):
         self._writeln(logical_bin.op.lexeme)
         self._indent()
-
-    def exit_logical_bin(self, logical_bin):
+        logical_bin.left.accept(self)
+        logical_bin.right.accept(self)
         self._dedent()
 
-    def enter_logical_rel(self, logical_rel):
+    def visit_logical_rel(self, logical_rel):
         self._writeln(logical_rel.op.lexeme)
         self._indent()
-
-    def exit_logical_rel(self, logical_rel):
+        logical_rel.left.accept(self)
+        logical_rel.right.accept(self)
         self._dedent()
 
     def visit_expr(self, expr):

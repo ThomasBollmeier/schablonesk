@@ -13,89 +13,21 @@ class Interpreter(BaseVisitor):
         self._env = environment
         self._stack = []
 
-    def eval(self, template_ast):
+    def eval(self, ast):
+        self._stack.append(None)
+        ast.accept(self)
+        return self._stack.pop()
+
+    def _set_ret_value(self, value):
+        self._stack[-1] = value
+
+    def visit_template(self, templ):
         ret = ""
-        for block in template_ast.blocks:
-            ret += self._eval_block(block)
-        return ret
+        for block in templ.blocks:
+            ret += self.eval(block)
+        self._set_ret_value(ret)
 
-    def _eval_block(self, ast):
-        if isinstance(ast, Text):
-            return self._eval_text(ast)
-        elif isinstance(ast, CondBlock):
-            return self._eval_cond_block(ast)
-        elif isinstance(ast, ForBlock):
-            return self._eval_for_block(ast)
-        else:
-            raise Exception("Unsupported evaluation")
-
-    def eval_expr(self, expr):
-        if isinstance(expr, SimpleValue):
-            return expr.get_value()
-        elif isinstance(expr, Identifier):
-            return self._eval_identifier(expr)
-        elif isinstance(expr, QualifiedName):
-            return self._eval_qualified_name(expr)
-        elif isinstance(expr, Negation):
-            return self._eval_negation(expr)
-        elif isinstance(expr, LogicalRelation):
-            return self._eval_logical_rel(expr)
-        elif isinstance(expr, LogicalBinExpr):
-            return self._eval_logical_bin(expr)
-        else:
-            raise Exception(f"Line {expr.token.line_num}: Unsupported expression {expr.token.lexeme}")
-
-    def _eval_identifier(self, expr):
-        name = expr.get_name()
-        value = self._env.get_value(name)
-        if value is None:
-            raise Exception(f"Line {expr.token.line_num}: Identifier {name} is not defined")
-        return value
-
-    def _eval_qualified_name(self, expr):
-        path = [tok.lexeme for tok in expr.identifier_tokens]
-        value = self._env.get_value(path[0])
-        for component in path[1:]:
-            value = getattr(value, component)
-        return value
-
-    def _eval_logical_rel(self, logical_rel):
-        left = self.eval_expr(logical_rel.left)
-        right = self.eval_expr(logical_rel.right)
-        op = logical_rel.op.lexeme
-        if op == "==":
-            return left == right
-        elif op == "<>":
-            return left != right
-        elif op == ">":
-            return left > right
-        elif op == ">=":
-            return left >= right
-        elif op == "<":
-            return left < right
-        elif op == "<=":
-            return left <= right
-        else:
-            raise Exception(f"Line {logical_rel.op.line_num}: Unknown operator {op}")
-
-    def _eval_logical_bin(self, logical_bin):
-        left = self.eval_expr(logical_bin.left)
-        op = logical_bin.op.lexeme
-        if op == "or":
-            if left:
-                return left  # shortcut evaluation
-            return self.eval_expr(logical_bin.right)
-        elif op == "and":
-            if not left:
-                return left  # shortcut evaluation
-            return self.eval_expr(logical_bin.right)
-        else:
-            raise Exception(f"Line {logical_bin.op.line_num}: Unknown operator {op}")
-
-    def _eval_negation(self, negation):
-        return not self.eval_expr(negation.expr)
-
-    def _eval_text(self, text):
+    def visit_text(self, text):
         config = Config.get()
         begin, end = config.get_templ_str_delimiters()
         cmd_line_begin = config.get_cmd_line_begin()
@@ -111,7 +43,7 @@ class Interpreter(BaseVisitor):
                 if pos != -1:
                     expr_str = cmd_line_begin + content[search_pos:pos]
                     ast = Parser(Scanner().scan(expr_str)).parse_expr()
-                    ret += str(self.eval_expr(ast))
+                    ret += str(self.eval(ast))
                     search_pos = pos + len(end)
                 else:
                     ret += content[search_pos:]
@@ -119,18 +51,18 @@ class Interpreter(BaseVisitor):
             else:
                 ret += content[search_pos:]
                 break
-        return ret
+        self._set_ret_value(ret)
 
-    def _eval_cond_block(self, cond_block):
+    def visit_cond(self, cond_block):
         for condition, block in cond_block.branches:
-            if self.eval_expr(condition):
-                return self._eval_block(block)
-        return None
+            if self.eval(condition):
+                self._set_ret_value(self.eval(block))
+                break
 
-    def _eval_for_block(self, for_block):
+    def visit_for(self, for_block):
         item_var_name = for_block.item_ident.get_name()
         try:
-            items = list(self.eval_expr(for_block.list_expr))
+            items = list(self.eval(for_block.list_expr))
         except TypeError:
             raise Exception("Cannot loop over non-list")
 
@@ -140,10 +72,11 @@ class Interpreter(BaseVisitor):
 
         for item in items:
             for_env.set_value(item_var_name, item)
-            # TODO: make use of filter condition
+            if for_block.filter_cond and not interpreter.eval(for_block.filter_cond):
+                continue
             block_str = None
             for block in for_block.blocks:
-                block_value = interpreter._eval_block(block)
+                block_value = interpreter.eval(block)
                 if block_value is not None:
                     if block_str is None:
                         block_str = block_value
@@ -155,4 +88,70 @@ class Interpreter(BaseVisitor):
                 else:
                     ret += os.linesep + block_str
 
-        return ret
+        self._set_ret_value(ret)
+
+    def visit_expr(self, expr):
+        if isinstance(expr, SimpleValue):
+            ret = expr.get_value()
+        elif isinstance(expr, Identifier):
+            ret = self._eval_identifier(expr)
+        elif isinstance(expr, QualifiedName):
+            ret = self._eval_qualified_name(expr)
+        else:
+            raise Exception(f"Line {expr.token.line_num}: Unsupported expression {expr.token.lexeme}")
+        self._set_ret_value(ret)
+
+    def visit_logical_bin(self, logical_bin):
+        left = self.eval(logical_bin.left)
+        op = logical_bin.op.lexeme
+        if op == "or":
+            if left:
+                self._set_ret_value(left)  # shortcut evaluation
+                return
+            self._set_ret_value(self.eval(logical_bin.right))
+        elif op == "and":
+            if not left:
+                self._set_ret_value(left)  # shortcut evaluation
+                return
+            self._set_ret_value(self.eval(logical_bin.right))
+        else:
+            raise Exception(f"Line {logical_bin.op.line_num}: Unknown operator {op}")
+
+    def visit_logical_rel(self, logical_rel):
+        left = self.eval(logical_rel.left)
+        right = self.eval(logical_rel.right)
+        op = logical_rel.op.lexeme
+        ret = None
+        if op == "==":
+            ret = left == right
+        elif op == "<>":
+            ret = left != right
+        elif op == ">":
+            ret = left > right
+        elif op == ">=":
+            ret = left >= right
+        elif op == "<":
+            ret = left < right
+        elif op == "<=":
+            ret = left <= right
+        else:
+            raise Exception(f"Line {logical_rel.op.line_num}: Unknown operator {op}")
+        self._set_ret_value(ret)
+
+    def visit_negation(self, negation):
+        ret = not self.eval(negation.expr)
+        self._set_ret_value(ret)
+
+    def _eval_identifier(self, expr):
+        name = expr.get_name()
+        value = self._env.get_value(name)
+        if value is None:
+            raise Exception(f"Line {expr.token.line_num}: Identifier {name} is not defined")
+        return value
+
+    def _eval_qualified_name(self, expr):
+        path = [tok.lexeme for tok in expr.identifier_tokens]
+        value = self._env.get_value(path[0])
+        for component in path[1:]:
+            value = getattr(value, component)
+        return value

@@ -4,10 +4,7 @@ class Template(object):
         self.blocks = blocks
 
     def accept(self, visitor):
-        visitor.enter_template(self)
-        for block in self.blocks:
-            block.accept(visitor)
-        visitor.exit_template(self)
+        visitor.visit_template(self)
 
 
 class Text(object):
@@ -35,13 +32,7 @@ class CondBlock(object):
         self.branches = branches
 
     def accept(self, visitor):
-        visitor.enter_cond(self)
-        for condition, block in self.branches:
-            visitor.enter_cond_branch(self)
-            condition.accept(visitor)
-            block.accept(visitor)
-            visitor.exit_cond_branch(self)
-        visitor.exit_cond(self)
+        visitor.visit_cond(self)
 
 
 class ForBlock(object):
@@ -53,10 +44,7 @@ class ForBlock(object):
         self.filter_cond = filter_cond
 
     def accept(self, visitor):
-        visitor.enter_for(self)
-        for block in self.blocks:
-            block.accept(visitor)
-        visitor.exit_for(self)
+        visitor.visit_for(self)
 
 
 class SingleToken(object):
@@ -143,10 +131,7 @@ class LogicalBinExpr(object):
         self.right = right
 
     def accept(self, visitor):
-        visitor.enter_logical_bin(self)
-        self.left.accept(visitor)
-        self.right.accept(visitor)
-        visitor.exit_logical_bin(self)
+        visitor.visit_logical_bin(self)
 
 
 class LogicalRelation(object):
@@ -157,10 +142,7 @@ class LogicalRelation(object):
         self.right = right
 
     def accept(self, visitor):
-        visitor.enter_logical_rel(self)
-        self.left.accept(visitor)
-        self.right.accept(visitor)
-        visitor.exit_logical_rel(self)
+        visitor.visit_logical_rel(self)
 
 
 class Negation(object):
@@ -177,46 +159,25 @@ class BaseVisitor(object):
     def __init__(self):
         pass
 
-    def enter_template(self, templ):
-        pass
-
-    def exit_template(self, templ):
+    def visit_template(self, templ):
         pass
 
     def visit_text(self, text):
         pass
 
-    def enter_cond(self, cond_block):
+    def visit_cond(self, cond_block):
         pass
 
-    def exit_cond(self, cond_block):
-        pass
-
-    def enter_cond_branch(self, cond_block):
-        pass
-
-    def exit_cond_branch(self, cond_block):
-        pass
-
-    def enter_for(self, for_block):
-        pass
-
-    def exit_for(self, for_block):
+    def visit_for(self, for_block):
         pass
 
     def visit_expr(self, expr):
         pass
 
-    def enter_logical_bin(self, logical_bin):
+    def visit_logical_bin(self, logical_bin):
         pass
 
-    def exit_logical_bin(self, logical_bin):
-        pass
-
-    def enter_logical_rel(self, logical_rel):
-        pass
-
-    def exit_logical_rel(self, logical_rel):
+    def visit_logical_rel(self, logical_rel):
         pass
 
     def visit_negation(self, negation):

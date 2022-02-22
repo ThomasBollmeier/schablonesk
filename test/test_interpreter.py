@@ -30,7 +30,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> is_done"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -55,7 +55,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer == 42"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -68,7 +68,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer <> 41"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -81,7 +81,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer > 41"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -94,7 +94,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer >= 42"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -107,7 +107,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer < 43"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -120,7 +120,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> answer <= 42"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -133,7 +133,7 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> not (answer == 41)"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
@@ -147,28 +147,28 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> a == 42 or b == 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
 
         code = ":> a <> 42 or b == 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
 
         code = ":> a == 42 or b <> 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
 
         code = ":> a <> 42 or b <> 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertFalse(value)
@@ -182,28 +182,28 @@ class InterpreterTest(unittest.TestCase):
 
         code = ":> a == 42 and b == 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertTrue(value)
 
         code = ":> a <> 42 and b == 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertFalse(value)
 
         code = ":> a == 42 and b <> 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertFalse(value)
 
         code = ":> a <> 42 and b <> 23"
         ast = self.create_parser(code)._logical_expr()
-        value = interpreter.eval_expr(ast)
+        value = interpreter.eval(ast)
 
         self.assertTrue(isinstance(value, bool))
         self.assertFalse(value)
