@@ -24,6 +24,8 @@ class Interpreter(BaseVisitor):
     def visit_template(self, templ):
         ret = ""
         for block in templ.blocks:
+            if ret:
+                ret += os.linesep
             ret += self.eval(block)
         self._set_ret_value(ret)
 

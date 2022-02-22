@@ -1,0 +1,5 @@
+<ul>
+:> for person in people where person.age >= 18
+    <li>$(person.name), $(person.first_name)</li>
+:> endfor
+</ul>
