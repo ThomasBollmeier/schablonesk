@@ -1,7 +1,8 @@
 class Template(object):
 
-    def __init__(self, blocks):
+    def __init__(self, blocks, snippets):
         self.blocks = blocks
+        self.snippets = snippets
 
     def accept(self, visitor):
         visitor.visit_template(self)
@@ -47,6 +48,27 @@ class ForBlock(object):
         visitor.visit_for(self)
 
 
+class Snippet(object):
+
+    def __init__(self, snippet_name, params, blocks):
+        self.name = snippet_name
+        self.params = params
+        self.blocks = blocks
+
+    def accept(self, visitor):
+        visitor.visit_snippet(self)
+
+
+class SnippetCall(object):
+
+    def __init__(self, snippet_name, args):
+        self.name = snippet_name
+        self.args = args
+
+    def accept(self, visitor):
+        visitor.visit_snippet_call(self)
+
+
 class SingleToken(object):
 
     def __init__(self, token):
@@ -90,7 +112,7 @@ class String(SimpleValue):
         SimpleValue.__init__(self, str_token)
 
     def get_value(self):
-        return self.token.lexeme[1:-1].replace("\\'", "'")
+        return self.token.lexeme  # .token.lexeme[1:-1].replace("\\'", "'")
 
 
 class Int(SimpleValue):
@@ -169,6 +191,12 @@ class BaseVisitor(object):
         pass
 
     def visit_for(self, for_block):
+        pass
+
+    def visit_snippet(self, snippet):
+        pass
+
+    def visit_snippet_call(self, snippet_call):
         pass
 
     def visit_expr(self, expr):

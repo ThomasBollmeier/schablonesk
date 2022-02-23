@@ -81,7 +81,10 @@ class _CommandBlock:
             "or": OR,
             "not": NOT,
             "true": TRUE,
-            "false": FALSE
+            "false": FALSE,
+            "snippet": SNIPPET,
+            "endsnippet": ENDSNIPPET,
+            "paste": PASTE
         }
 
     def add(self, line_num, commands):

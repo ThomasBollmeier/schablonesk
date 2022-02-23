@@ -13,6 +13,8 @@ class AstPrinter(BaseVisitor):
         ast.accept(self)
 
     def visit_template(self, templ):
+        for snippet in templ.snippets:
+            snippet.accept(self)
         for block in templ.blocks:
             block.accept(self)
 
@@ -47,6 +49,28 @@ class AstPrinter(BaseVisitor):
         self._dedent()
         self._writeln("endfor")
 
+    def visit_snippet(self, snippet):
+        self._writeln(f"snippet {snippet.name.lexeme}")
+        self._indent()
+        self._write("parameters: ")
+        for p in snippet.params:
+            self._write(f"{p.lexeme} ")
+        self._writeln()
+        for block in snippet.blocks:
+            block.accept(self)
+        self._dedent()
+        self._writeln("endsnippet")
+
+    def visit_snippet_call(self, snippet_call):
+        self._writeln(f"pasted section from snippet {snippet_call.name.lexeme}")
+        self._indent()
+        self._write("arguments: ")
+        for arg in snippet_call.args:
+            self._write(f"{self._expr_to_str(arg)} ")
+        self._writeln()
+        self._dedent()
+        self._writeln("end of pasted section")
+
     def visit_logical_bin(self, logical_bin):
         self._writeln(logical_bin.op.lexeme)
         self._indent()
@@ -71,7 +95,7 @@ class AstPrinter(BaseVisitor):
     @staticmethod
     def _expr_to_str(expr):
         if isinstance(expr, Identifier):
-            return f"identifier(\"{expr.token.lexeme}\")"
+            return expr.token.lexeme
         elif isinstance(expr, QualifiedName):
             return str(expr)
         elif isinstance(expr, SimpleValue):
@@ -90,5 +114,5 @@ class AstPrinter(BaseVisitor):
             s = " " + s
         print(s, end="")
 
-    def _writeln(self, s):
+    def _writeln(self, s=""):
         self._write(s + os.linesep)

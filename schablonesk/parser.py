@@ -23,11 +23,15 @@ class Parser(object):
 
     def _template(self):
         blocks = []
+        snippets = []
 
         while not self._end_of_tokens():
-            blocks.append(self._block())
+            if self._match(SNIPPET):
+                snippets.append(self._snippet())
+            else:
+                blocks.append(self._block())
 
-        return Template(blocks)
+        return Template(blocks, snippets)
 
     def _block(self):
         if self._match(TEXT):
@@ -36,8 +40,34 @@ class Parser(object):
             return self._cond_block()
         elif self._match(FOR):
             return self._for_block()
+        elif self._match(PASTE):
+            return self._paste()
         else:
             raise Exception("Expected Block")
+
+    def _paste(self):
+        self._consume()
+        snippet_name = self._consume(IDENTIFIER)
+        self._consume(LPAR)
+        args = []
+        while not self._end_of_tokens() and not self._match(RPAR):
+            args.append(self._expr())
+        self._consume(RPAR)
+        return SnippetCall(snippet_name, args)
+
+    def _snippet(self):
+        self._consume()
+        snippet_name = self._consume(IDENTIFIER)
+        self._consume(LPAR)
+        params = []
+        while not self._end_of_tokens() and not self._match(RPAR):
+            params.append(self._consume(IDENTIFIER))
+        self._consume(RPAR)
+        blocks = []
+        while not self._end_of_tokens() and not self._match(ENDSNIPPET):
+            blocks.append(self._block())
+        self._consume(ENDSNIPPET)
+        return Snippet(snippet_name, params, blocks)
 
     def _for_block(self):
         self._consume()
