@@ -49,12 +49,11 @@ class ParserTest(unittest.TestCase):
         AstPrinter().print(ast)
 
     def test_parse_snippet(self):
-        code = """
-         :> snippet say_hello (greeting name) 
+        code = """:> snippet say_hello (greeting name) 
          $(greeting) $(name)!
          :> endsnippet
-         :> paste say_hello('Hallo' 'Thomas')
-         """
+         :> paste say_hello('Hallo' 'Thomas')"""
+
         ast = Parser(self.scanner.scan(code)).parse()
         self.assertIsNotNone(ast)
 

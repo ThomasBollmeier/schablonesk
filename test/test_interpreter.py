@@ -264,3 +264,27 @@ class InterpreterTest(unittest.TestCase):
         actual = [line.strip() for line in value.split(os.linesep)]
 
         self.assertEqual(expected, actual)
+
+    def test_snippet_call(self):
+
+        global_env = Environment()
+        global_env.set_value("numbers", [1, 2, 3])
+        interpreter = Interpreter(global_env)
+
+        code = """:> snippet number_info (n)
+        The number is: $(n).
+        :> endsnippet
+        :> for number in numbers where number <> 2
+            :> paste number_info(number)
+        :> endfor"""
+
+        ast = self.create_parser(code).parse()
+        value = interpreter.eval(ast)
+
+        expected = [
+            "The number is: 1.",
+            "The number is: 3."
+        ]
+        actual = [line.strip() for line in value.split(os.linesep)]
+
+        self.assertEqual(expected, actual)

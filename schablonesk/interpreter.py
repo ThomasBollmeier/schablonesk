@@ -23,6 +23,8 @@ class Interpreter(BaseVisitor):
 
     def visit_template(self, templ):
         ret = ""
+        for snippet in templ.snippets:
+            snippet.accept(self)
         for block in templ.blocks:
             if ret:
                 ret += os.linesep
@@ -76,14 +78,7 @@ class Interpreter(BaseVisitor):
             for_env.set_value(item_var_name, item)
             if for_block.filter_cond and not interpreter.eval(for_block.filter_cond):
                 continue
-            block_str = None
-            for block in for_block.blocks:
-                block_value = interpreter.eval(block)
-                if block_value is not None:
-                    if block_str is None:
-                        block_str = block_value
-                    else:
-                        block_str += block_value
+            block_str = self._eval_blocks(for_block.blocks, interpreter)
             if block_str is not None:
                 if ret is None:
                     ret = block_str
@@ -92,8 +87,48 @@ class Interpreter(BaseVisitor):
 
         self._set_ret_value(ret)
 
+    @staticmethod
+    def _eval_blocks(blocks, interpreter):
+        ret = None
+        for block in blocks:
+            block_value = interpreter.eval(block)
+            if block_value is not None:
+                if ret is None:
+                    ret = block_value
+                else:
+                    ret += block_value
+        return ret
+
+    def visit_snippet(self, snippet):
+        snippet_name = snippet.name.lexeme
+        self._env.set_value(snippet_name, snippet)
+
+    def visit_snippet_call(self, snippet_call):
+        snippet_name = snippet_call.name.lexeme
+
+        snippet = self._env.get_value(snippet_name)
+        if snippet is None:
+            raise Exception(f"Unknown snippet {snippet_name}")
+
+        num_args = len(snippet_call.args)
+        num_params = len(snippet.params)
+        if num_args != num_params:
+            raise Exception(f"#args (={num_args}) does not match #params (={num_params})")
+
+        arg_values = [self.eval(arg) for arg in snippet_call.args]
+        snippet_env = Environment(self._env)
+        for i, param in enumerate(snippet.params):
+            snippet_env.set_value(param.lexeme, arg_values[i])
+
+        interpreter = Interpreter(snippet_env)
+        ret = self._eval_blocks(snippet.blocks, interpreter)
+
+        self._set_ret_value(ret)
+
     def visit_expr(self, expr):
-        if isinstance(expr, SimpleValue):
+        if isinstance(expr, String):
+            ret = expr.get_value().replace("\\'", "'")
+        elif isinstance(expr, SimpleValue):
             ret = expr.get_value()
         elif isinstance(expr, Identifier):
             ret = self._eval_identifier(expr)
