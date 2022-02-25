@@ -288,3 +288,23 @@ class InterpreterTest(unittest.TestCase):
         actual = [line.strip() for line in value.split(os.linesep)]
 
         self.assertEqual(expected, actual)
+
+    def test_call(self):
+
+        def add(a, b):
+            return a + b
+
+        def sub(a, b):
+            return a - b
+
+        global_env = Environment()
+        global_env.set_value("add", add)
+        global_env.set_value("sub", sub)
+        interpreter = Interpreter(global_env)
+
+        code = ":> add(1 sub(43 2))"
+
+        ast = self.create_parser(code).parse_expr()
+        value = interpreter.eval(ast)
+
+        self.assertEqual(42, value)

@@ -162,9 +162,18 @@ class Parser(object):
             self._consume()
             identifier_tokens.append(self._consume(IDENTIFIER))
         if len(identifier_tokens) == 1:
-            return Identifier(identifier_tokens[0])
+            name = Identifier(identifier_tokens[0])
         else:
-            return QualifiedName(identifier_tokens)
+            name = QualifiedName(identifier_tokens)
+        if not self._match(LPAR):
+            return name
+        # function or method call
+        self._consume(LPAR)
+        args = []
+        while not self._end_of_tokens() and not self._match(RPAR):
+            args.append(self._expr())
+        self._consume(RPAR)
+        return Call(name, args)
 
     def _match(self, *token_categories):
         if self._end_of_tokens():

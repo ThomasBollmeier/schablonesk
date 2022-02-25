@@ -59,6 +59,14 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_call(self):
+        code = ":> add(1 sub(43 2))"
+
+        ast = Parser(self.scanner.scan(code)).parse_expr()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
     def test_parse_file(self):
         file_path = os.path.dirname(__file__) + "/demo.schablonesk"
         code = self._read_file(file_path)

@@ -116,7 +116,7 @@ class Interpreter(BaseVisitor):
             raise Exception(f"#args (={num_args}) does not match #params (={num_params})")
 
         arg_values = [self.eval(arg) for arg in snippet_call.args]
-        snippet_env = Environment(self._env)
+        snippet_env = Environment()
         for i, param in enumerate(snippet.params):
             snippet_env.set_value(param.lexeme, arg_values[i])
 
@@ -124,6 +124,11 @@ class Interpreter(BaseVisitor):
         ret = self._eval_blocks(snippet.blocks, interpreter)
 
         self._set_ret_value(ret)
+
+    def visit_call(self, func_call):
+        callee = self.eval(func_call.callee)
+        arg_values = [self.eval(arg) for arg in func_call.args]
+        self._set_ret_value(callee(*arg_values))
 
     def visit_expr(self, expr):
         if isinstance(expr, String):

@@ -69,6 +69,16 @@ class SnippetCall(object):
         visitor.visit_snippet_call(self)
 
 
+class Call(object):
+
+    def __init__(self, callee, args):
+        self.callee = callee
+        self.args = args
+
+    def accept(self, visitor):
+        visitor.visit_call(self)
+
+
 class SingleToken(object):
 
     def __init__(self, token):
@@ -141,6 +151,9 @@ class QualifiedName(object):
     def accept(self, visitor):
         visitor.visit_expr(self)
 
+    def get_name(self):
+        return str(self)
+
     def __str__(self):
         return ".".join(list(map(lambda ident: ident.lexeme, self.identifier_tokens)))
 
@@ -197,6 +210,9 @@ class BaseVisitor(object):
         pass
 
     def visit_snippet_call(self, snippet_call):
+        pass
+
+    def visit_call(self, func_call):
         pass
 
     def visit_expr(self, expr):

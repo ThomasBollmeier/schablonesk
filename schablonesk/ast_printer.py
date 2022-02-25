@@ -52,9 +52,11 @@ class AstPrinter(BaseVisitor):
     def visit_snippet(self, snippet):
         self._writeln(f"snippet {snippet.name.lexeme}")
         self._indent()
-        self._write("parameters: ")
+        self._writeln("parameters: ")
+        self._indent()
         for p in snippet.params:
-            self._write(f"{p.lexeme} ")
+            self._writeln(f"{p.lexeme} ")
+        self._dedent()
         self._writeln()
         for block in snippet.blocks:
             block.accept(self)
@@ -64,12 +66,24 @@ class AstPrinter(BaseVisitor):
     def visit_snippet_call(self, snippet_call):
         self._writeln(f"pasted section from snippet {snippet_call.name.lexeme}")
         self._indent()
-        self._write("arguments: ")
+        self._writeln("arguments: ")
+        self._indent()
         for arg in snippet_call.args:
-            self._write(f"{self._expr_to_str(arg)} ")
+            arg.accept(self)
+        self._dedent()
         self._writeln()
         self._dedent()
-        self._writeln("end of pasted section")
+
+    def visit_call(self, func_call):
+        self._writeln(f"call of function {func_call.callee.get_name()}")
+        self._indent()
+        self._writeln("arguments: ")
+        self._indent()
+        for arg in func_call.args:
+            arg.accept(self)
+        self._dedent()
+        self._writeln()
+        self._dedent()
 
     def visit_logical_bin(self, logical_bin):
         self._writeln(logical_bin.op.lexeme)
