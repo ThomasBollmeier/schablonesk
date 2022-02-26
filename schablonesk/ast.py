@@ -79,6 +79,16 @@ class Call(object):
         visitor.visit_call(self)
 
 
+class Use(object):
+
+    def __init__(self, template_name, names):
+        self.template_name = template_name
+        self.names = names  # names and aliases
+
+    def accept(self, visitor):
+        visitor.visit_use(self)
+
+
 class SingleToken(object):
 
     def __init__(self, token):
@@ -210,6 +220,9 @@ class BaseVisitor(object):
         pass
 
     def visit_snippet_call(self, snippet_call):
+        pass
+
+    def visit_use(self, use):
         pass
 
     def visit_call(self, func_call):

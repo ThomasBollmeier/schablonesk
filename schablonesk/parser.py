@@ -42,8 +42,27 @@ class Parser(object):
             return self._for_block()
         elif self._match(PASTE):
             return self._paste()
+        elif self._match(USE):
+            return self._use()
         else:
             raise Exception("Expected Block")
+
+    def _use(self):
+        self._consume()
+        names = []
+        while not self._end_of_tokens() and self._match(IDENTIFIER):
+            name = self._consume()
+            if self._match(LPAR):
+                self._consume()
+                alias = self._consume(IDENTIFIER)
+                self._consume(RPAR)
+            else:
+                alias = None
+            names.append((name, alias))
+        if names:
+            self._consume(FROM)
+        template_name = self._consume(STRING)
+        return Use(template_name, names)
 
     def _paste(self):
         self._consume()

@@ -85,6 +85,19 @@ class AstPrinter(BaseVisitor):
         self._writeln()
         self._dedent()
 
+    def visit_use(self, use):
+        self._writeln(f"use template {use.template_name.lexeme}")
+        self._indent()
+        if use.names:
+            for name, alias in use.names:
+                if not alias:
+                    self._writeln(f"import {name.lexeme}")
+                else:
+                    self._writeln(f"import {name.lexeme} as {alias.lexeme}")
+        else:
+            self._writeln("import everything")
+        self._dedent()
+
     def visit_logical_bin(self, logical_bin):
         self._writeln(logical_bin.op.lexeme)
         self._indent()

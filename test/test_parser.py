@@ -67,6 +67,22 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_use_all(self):
+        code = ":> use 'my_standard'"
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
+    def test_parse_use_some_snippets(self):
+        code = ":> use head(header) footer from 'my_standard'"
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
     def test_parse_file(self):
         file_path = os.path.dirname(__file__) + "/demo.schablonesk"
         code = self._read_file(file_path)
