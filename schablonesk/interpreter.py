@@ -4,13 +4,15 @@ from schablonesk.config import Config
 from schablonesk.scanner import Scanner
 from schablonesk.parser import Parser
 from schablonesk.environment import Environment
+from schablonesk.template_exports import TemplateExports
 
 
 class Interpreter(BaseVisitor):
 
-    def __init__(self, environment):
+    def __init__(self, environment, template_exports=TemplateExports()):
         BaseVisitor.__init__(self)
         self._env = environment
+        self._template_exports = template_exports
         self._stack = []
 
     def eval(self, ast):
@@ -23,6 +25,8 @@ class Interpreter(BaseVisitor):
 
     def visit_template(self, templ):
         ret = ""
+        for usage in templ.usages:
+            usage.accept(self)
         for snippet in templ.snippets:
             snippet.accept(self)
         for block in templ.blocks:
@@ -71,7 +75,7 @@ class Interpreter(BaseVisitor):
             raise Exception("Cannot loop over non-list")
 
         for_env = Environment(parent=self._env)
-        interpreter = Interpreter(for_env)
+        interpreter = Interpreter(for_env, self._template_exports)
         ret = None
 
         for item in items:
@@ -120,7 +124,7 @@ class Interpreter(BaseVisitor):
         for i, param in enumerate(snippet.params):
             snippet_env.set_value(param.lexeme, arg_values[i])
 
-        interpreter = Interpreter(snippet_env)
+        interpreter = Interpreter(snippet_env, self._template_exports)
         ret = self._eval_blocks(snippet.blocks, interpreter)
 
         self._set_ret_value(ret)
@@ -130,9 +134,26 @@ class Interpreter(BaseVisitor):
         arg_values = [self.eval(arg) for arg in func_call.args]
         self._set_ret_value(callee(*arg_values))
 
+    def visit_use(self, use):
+        templ_name = self.eval(use.template_name)
+        templ_exports = self._template_exports.get_exports(templ_name)
+        if use.names:
+            for (name_id, alias_id) in use.names:
+                name = name_id.lexeme
+                alias = alias_id is not None and alias_id.lexeme or None
+                if name not in templ_exports:
+                    raise Exception(f"'{name}' is not provided by '{templ_name}'")
+                if alias is None:
+                    self._env.set_value(name, templ_exports[name])
+                else:
+                    self._env.set_value(alias, templ_exports[name])
+        else:
+            for name, ast in templ_exports.items():
+                self._env.set_value(name, ast)
+
     def visit_expr(self, expr):
         if isinstance(expr, String):
-            ret = expr.get_value().replace("\\'", "'")
+            ret = expr.get_value().replace("\\'", "'")[1:-1]
         elif isinstance(expr, SimpleValue):
             ret = expr.get_value()
         elif isinstance(expr, Identifier):

@@ -13,6 +13,8 @@ class AstPrinter(BaseVisitor):
         ast.accept(self)
 
     def visit_template(self, templ):
+        for usage in templ.usages:
+            usage.accept(self)
         for snippet in templ.snippets:
             snippet.accept(self)
         for block in templ.blocks:
@@ -86,7 +88,7 @@ class AstPrinter(BaseVisitor):
         self._dedent()
 
     def visit_use(self, use):
-        self._writeln(f"use template {use.template_name.lexeme}")
+        self._writeln(f"use template {use.template_name.get_string()}")
         self._indent()
         if use.names:
             for name, alias in use.names:

@@ -5,6 +5,7 @@ from schablonesk.scanner import Scanner
 from schablonesk.parser import Parser
 from schablonesk.environment import Environment
 from schablonesk.interpreter import Interpreter
+from schablonesk.template_exports import TemplateExports
 
 
 class _Person(object):
@@ -308,3 +309,26 @@ class InterpreterTest(unittest.TestCase):
         value = interpreter.eval(ast)
 
         self.assertEqual(42, value)
+
+    def test_use_statement(self):
+
+        global_env = Environment()
+
+        templ_exports = TemplateExports()
+        templ_code = """
+        :> snippet h1_element(text)
+        <h1>$(text)</h1>
+        :> endsnippet
+        """
+        templ_exports.set_template_code("base", templ_code)
+
+        interpreter = Interpreter(global_env, templ_exports)
+
+        code = """:> use h1_element(title) from 'base'
+        :> paste title('Hallo Welt!')"""
+
+        ast = self.create_parser(code).parse()
+        value = interpreter.eval(ast)
+
+        self.assertEqual(value.strip(), "<h1>Hallo Welt!</h1>")
+

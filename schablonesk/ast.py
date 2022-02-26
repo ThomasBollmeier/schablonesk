@@ -1,8 +1,9 @@
 class Template(object):
 
-    def __init__(self, blocks, snippets):
-        self.blocks = blocks
+    def __init__(self, usages, snippets, blocks):
+        self.usages = usages
         self.snippets = snippets
+        self.blocks = blocks
 
     def accept(self, visitor):
         visitor.visit_template(self)
@@ -133,6 +134,9 @@ class String(SimpleValue):
 
     def get_value(self):
         return self.token.lexeme  # .token.lexeme[1:-1].replace("\\'", "'")
+
+    def get_string(self):
+        return self.token.lexeme[1:-1].replace("\\'", "'")[1:-1]
 
 
 class Int(SimpleValue):

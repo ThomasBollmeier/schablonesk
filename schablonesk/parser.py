@@ -22,16 +22,19 @@ class Parser(object):
         return ret
 
     def _template(self):
-        blocks = []
+        usages = []
         snippets = []
+        blocks = []
 
         while not self._end_of_tokens():
-            if self._match(SNIPPET):
+            if self._match(USE):
+                usages.append(self._use())
+            elif self._match(SNIPPET):
                 snippets.append(self._snippet())
             else:
                 blocks.append(self._block())
 
-        return Template(blocks, snippets)
+        return Template(usages, snippets, blocks)
 
     def _block(self):
         if self._match(TEXT):
@@ -42,8 +45,6 @@ class Parser(object):
             return self._for_block()
         elif self._match(PASTE):
             return self._paste()
-        elif self._match(USE):
-            return self._use()
         else:
             raise Exception("Expected Block")
 
@@ -61,7 +62,7 @@ class Parser(object):
             names.append((name, alias))
         if names:
             self._consume(FROM)
-        template_name = self._consume(STRING)
+        template_name = String(self._consume(STRING))
         return Use(template_name, names)
 
     def _paste(self):
