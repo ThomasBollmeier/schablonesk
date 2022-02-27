@@ -5,7 +5,7 @@ from schablonesk.interpreter import Interpreter
 from schablonesk.template_exports import TemplateExports
 
 
-def generate_code(template_code, params):
+def generate_code(template_code, **params):
     ast = Parser(Scanner().scan(template_code)).parse()
 
     env = Environment()

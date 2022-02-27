@@ -1,3 +1,4 @@
+import os.path
 from schablonesk.parser import Parser
 from schablonesk.scanner import Scanner
 
@@ -6,6 +7,7 @@ class TemplateExports(object):
 
     def __init__(self):
         self._exports = {}
+        self._search_paths = [os.path.curdir]
 
     def set_template_code(self, template_name, code):
         template_ast = Parser(Scanner().scan(code)).parse()
@@ -29,5 +31,12 @@ class TemplateExports(object):
                          if name in all_exports])
 
     def _load(self, template_name):
-        raise Exception("Not yet implemented")
+        for search_path in self._search_paths:
+            template_path = os.path.join(search_path, template_name)
+            if os.path.exists(template_path):
+                with open(template_path, "r") as f:
+                    template_code = f.read()
+                    self.set_template_code(template_name, template_code)
+                    return
+        raise Exception(f"Cannot load template file '{template_name}'")
 

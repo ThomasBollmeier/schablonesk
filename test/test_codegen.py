@@ -22,9 +22,19 @@ class CodegenTest(unittest.TestCase):
             Person("Mustermann", "Erika", 42),
         ]
 
-        generated = generate_code(template_code, {
-            "people": people
-        })
+        generated = generate_code(template_code, people=people)
+
+        print(generated)
+
+    def test_codegen_with_use(self):
+        file_path = os.path.dirname(__file__) + "/index.html.schablonesk"
+        template_code = self._read_file(file_path)
+
+        generated = generate_code(
+            template_code,
+            title="My most beloved Hobbies",
+            hobbies=["Hacking", "Running", "Reading"]
+        )
 
         print(generated)
 

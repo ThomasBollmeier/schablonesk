@@ -1,0 +1,15 @@
+:> use h1_element(heading_first) from 'base.html.schablonesk'
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>$(title)</title>
+    </head>
+    <body>
+        :> paste heading_first (title)
+        <ul>
+        :> for hobby in hobbies
+            <li>$(hobby)</li>
+        :> endfor
+        </ul>
+    </body>
+</html>
