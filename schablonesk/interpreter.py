@@ -9,7 +9,7 @@ from schablonesk.template_exports import TemplateExports
 
 class Interpreter(BaseVisitor):
 
-    def __init__(self, environment, template_exports=TemplateExports()):
+    def __init__(self, environment, template_exports=TemplateExports([os.curdir])):
         BaseVisitor.__init__(self)
         self._env = environment
         self._template_exports = template_exports

@@ -314,7 +314,7 @@ class InterpreterTest(unittest.TestCase):
 
         global_env = Environment()
 
-        templ_exports = TemplateExports()
+        templ_exports = TemplateExports([os.curdir])
         templ_code = """
         :> snippet h1_element(text)
         <h1>$(text)</h1>

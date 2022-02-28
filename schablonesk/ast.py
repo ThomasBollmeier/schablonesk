@@ -133,10 +133,10 @@ class String(SimpleValue):
         SimpleValue.__init__(self, str_token)
 
     def get_value(self):
-        return self.token.lexeme  # .token.lexeme[1:-1].replace("\\'", "'")
+        return self.token.lexeme
 
     def get_string(self):
-        return self.token.lexeme[1:-1].replace("\\'", "'")[1:-1]
+        return self.token.lexeme[1:-1].replace("\\'", "'")
 
 
 class Int(SimpleValue):

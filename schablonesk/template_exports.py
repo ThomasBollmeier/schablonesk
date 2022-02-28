@@ -2,17 +2,12 @@ import os.path
 from schablonesk.parser import Parser
 from schablonesk.scanner import Scanner
 
-TEMPL_PATH = "SCHABLONESK_TEMPLATE_DIRS"
-
 
 class TemplateExports(object):
 
-    def __init__(self):
+    def __init__(self, search_paths):
         self._exports = {}
-        self._search_paths = [os.path.curdir]
-        if TEMPL_PATH in os.environ:
-            add_search_paths = os.environ[TEMPL_PATH].split(os.pathsep)
-            self._search_paths += add_search_paths
+        self._search_paths = search_paths
 
     def set_template_code(self, template_name, code):
         template_ast = Parser(Scanner().scan(code)).parse()

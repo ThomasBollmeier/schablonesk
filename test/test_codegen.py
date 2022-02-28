@@ -1,6 +1,6 @@
 import os
 import unittest
-from schablonesk.codegen import generate_code
+from schablonesk import CodeGenerator
 
 
 class Person(object):
@@ -22,7 +22,7 @@ class CodegenTest(unittest.TestCase):
             Person("Mustermann", "Erika", 42),
         ]
 
-        generated = generate_code(template_code, people=people)
+        generated = CodeGenerator().generate_code(template_code, people=people)
 
         print(generated)
 
@@ -30,7 +30,7 @@ class CodegenTest(unittest.TestCase):
         file_path = os.path.dirname(__file__) + "/index.html.schablonesk"
         template_code = self._read_file(file_path)
 
-        generated = generate_code(
+        generated = CodeGenerator().generate_code(
             template_code,
             title="My most beloved Hobbies",
             hobbies=["Hacking", "Running", "Reading"]
