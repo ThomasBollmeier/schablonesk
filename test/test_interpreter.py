@@ -266,6 +266,29 @@ class InterpreterTest(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
+    def test_for_block_first_last(self):
+
+        global_env = Environment()
+        global_env.set_value("numbers", [1, 2, 3])
+        interpreter = Interpreter(global_env)
+
+        code = """:> for number in numbers
+            :> cond is_first or is_last
+        The number is $(number).
+            :> endcond
+        :> endfor"""
+
+        ast = self.create_parser(code).parse()
+        value = interpreter.eval(ast)
+
+        expected = [
+            "The number is 1.",
+            "The number is 3."
+        ]
+        actual = [line.strip() for line in value.split(os.linesep)]
+
+        self.assertEqual(expected, actual)
+
     def test_snippet_call(self):
 
         global_env = Environment()

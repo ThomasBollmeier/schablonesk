@@ -78,8 +78,11 @@ class Interpreter(BaseVisitor):
         interpreter = Interpreter(for_env, self._template_exports)
         ret = None
 
-        for item in items:
+        last_idx = len(items) - 1
+        for idx, item in enumerate(items):
             for_env.set_value(item_var_name, item)
+            for_env.set_value("is_first", idx == 0)
+            for_env.set_value("is_last", idx == last_idx)
             if for_block.filter_cond and not interpreter.eval(for_block.filter_cond):
                 continue
             block_str = self._eval_blocks(for_block.blocks, interpreter)
