@@ -3,16 +3,27 @@ import argparse
 import json
 import os.path
 
+import schablonesk
 from schablonesk import CodeGenerator
 
 
 def create_arg_parser():
-    ret = argparse.ArgumentParser("Generate code from template")
+
+    version_info = "schablonesk-cli"
+    version_info += "\n(c) Thomas Bollmeier 2022 <developer@thomas-bollmeier.de>"
+    version_info += f"\nVersion: {schablonesk.VERSION}"
+
+    ret = argparse.ArgumentParser(
+        description="Generate code from template")
     ret.add_argument("template_file",
                      help="path to template file")
     ret.add_argument("--params-json",
                      help="parameters file in JSON format",
                      required=True)
+    ret.add_argument("-v", "--version",
+                     help="show version info",
+                     action="version",
+                     version=version_info)
     return ret
 
 

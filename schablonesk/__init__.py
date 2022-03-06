@@ -6,6 +6,9 @@ from schablonesk.interpreter import Interpreter
 from schablonesk.template_exports import TemplateExports
 
 
+VERSION = "0.2.0"
+
+
 class CodeGenerator(object):
 
     TEMPL_PATH = "SCHABLONESK_TEMPLATE_DIRS"
