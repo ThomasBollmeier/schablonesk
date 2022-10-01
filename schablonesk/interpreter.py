@@ -103,7 +103,7 @@ class Interpreter(BaseVisitor):
                 if ret is None:
                     ret = block_value
                 else:
-                    ret += block_value
+                    ret += os.linesep + block_value
         return ret
 
     def visit_snippet(self, snippet):

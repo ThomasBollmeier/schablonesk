@@ -1,15 +1,13 @@
-:> use h1_element(heading_first) from 'base.html.schablonesk'
+:> use h1_element(heading_first)
+:>     ul
+:>     from 'base.html.schablonesk'
 <!DOCTYPE html>
 <html>
     <head>
         <title>$(title)</title>
     </head>
     <body>
-        :> paste heading_first (title)
-        <ul>
-        :> for hobby in hobbies
-            <li>$(hobby)</li>
-        :> endfor
-        </ul>
+        :> paste heading_first (title) indent by 2 tabs
+        :> paste ul(hobbies) indent by 2 tabs
     </body>
 </html>
