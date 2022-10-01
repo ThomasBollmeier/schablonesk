@@ -2,7 +2,7 @@ import os
 from schablonesk.ast import *
 from schablonesk.config import Config
 from schablonesk.scanner import Scanner
-from schablonesk.parser import Parser
+from schablonesk.parser import Parser, IndentationUnit
 from schablonesk.environment import Environment
 from schablonesk.template_exports import TemplateExports
 
@@ -129,6 +129,14 @@ class Interpreter(BaseVisitor):
 
         interpreter = Interpreter(snippet_env, self._template_exports)
         ret = self._eval_blocks(snippet.blocks, interpreter)
+
+        if snippet_call.indent:
+            value_expr, unit = snippet_call.indent
+            value = self.eval(value_expr)
+            if not isinstance(value, int):
+                raise Exception("Indentation value must be an integer")
+            indent = "\t" * value if unit == IndentationUnit.TABS else " " * value
+            ret = os.linesep.join([indent + line for line in ret.split(os.linesep)])
 
         self._set_ret_value(ret)
 

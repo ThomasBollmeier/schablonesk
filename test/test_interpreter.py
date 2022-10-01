@@ -296,20 +296,20 @@ class InterpreterTest(unittest.TestCase):
         interpreter = Interpreter(global_env)
 
         code = """:> snippet number_info (n)
-        The number is: $(n).
+The number is: $(n).
         :> endsnippet
         :> for number in numbers where number <> 2
-            :> paste number_info(number)
+            :> paste number_info(number) indent by 4 spaces
         :> endfor"""
 
         ast = self.create_parser(code).parse()
         value = interpreter.eval(ast)
 
         expected = [
-            "The number is: 1.",
-            "The number is: 3."
+            "    The number is: 1.",
+            "    The number is: 3."
         ]
-        actual = [line.strip() for line in value.split(os.linesep)]
+        actual = value.split(os.linesep)
 
         self.assertEqual(expected, actual)
 

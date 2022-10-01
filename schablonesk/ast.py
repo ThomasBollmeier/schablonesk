@@ -62,9 +62,10 @@ class Snippet(object):
 
 class SnippetCall(object):
 
-    def __init__(self, snippet_name, args):
+    def __init__(self, snippet_name, args, indent=None):
         self.name = snippet_name
         self.args = args
+        self.indent = indent
 
     def accept(self, visitor):
         visitor.visit_snippet_call(self)

@@ -1,6 +1,7 @@
 import unittest
 import os.path
 from schablonesk.scanner import Scanner
+from schablonesk.token_category import *
 
 
 class ScannerTest(unittest.TestCase):
@@ -32,6 +33,15 @@ class ScannerTest(unittest.TestCase):
         """
         tokens = self.scanner.scan(code)
         self.assertEqual(24, len(tokens))
+        self.print_tokens(tokens)
+
+    def test_scan_paste_w_indent(self):
+        code = """:> paste some_snippet() indent by 4 spaces"""
+        tokens = self.scanner.scan(code)
+        self.assertEqual(8, len(tokens))
+        self.assertEqual(tokens[-4].category, INDENT)
+        self.assertEqual(tokens[-3].category, BY)
+        self.assertEqual(tokens[-1].category, SPACES)
         self.print_tokens(tokens)
 
     def test_scan_simple_types(self):

@@ -6,7 +6,7 @@ from schablonesk.interpreter import Interpreter
 from schablonesk.template_exports import TemplateExports
 
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 
 class CodeGenerator(object):

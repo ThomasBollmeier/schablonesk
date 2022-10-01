@@ -86,7 +86,11 @@ class _CommandBlock:
             "endsnippet": ENDSNIPPET,
             "paste": PASTE,
             "use": USE,
-            "from": FROM
+            "from": FROM,
+            "indent": INDENT,
+            "by": BY,
+            "tabs": TABS,
+            "spaces": SPACES
         }
 
     def add(self, line_num, commands):

@@ -73,7 +73,21 @@ class Parser(object):
         while not self._end_of_tokens() and not self._match(RPAR):
             args.append(self._expr())
         self._consume(RPAR)
-        return SnippetCall(snippet_name, args)
+
+        indent = None
+        if self._match(INDENT):
+            self._consume(INDENT)
+            self._consume(BY)
+            value = self._expr()
+            if self._match(TABS):
+                unit = IndentationUnit.TABS
+                self._consume(TABS)
+            else:
+                unit = IndentationUnit.SPACES
+                self._consume(SPACES)
+            indent = (value, unit)
+
+        return SnippetCall(snippet_name, args, indent)
 
     def _snippet(self):
         self._consume()
@@ -216,3 +230,7 @@ class Parser(object):
     def _end_of_tokens(self):
         return self._next_idx > self._end_idx
 
+
+class IndentationUnit:
+    TABS = 1
+    SPACES = 2

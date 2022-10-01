@@ -59,6 +59,28 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_paste_snippet_w_tab_indent(self):
+        code = """:> snippet say_hello (greeting name) 
+         $(greeting) $(name)!
+         :> endsnippet
+         :> paste say_hello('Hallo' 'Thomas') indent by 1 tabs"""
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
+    def test_parse_paste_snippet_w_space_indent(self):
+        code = """:> snippet say_hello (greeting name) 
+         $(greeting) $(name)!
+         :> endsnippet
+         :> paste say_hello('Hallo' 'Thomas') indent by 4 spaces"""
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
     def test_parse_call(self):
         code = ":> add(1 sub(43 2))"
 

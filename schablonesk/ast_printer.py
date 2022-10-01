@@ -1,6 +1,6 @@
 import os
 from schablonesk.ast import *
-
+from schablonesk.parser import IndentationUnit
 
 class AstPrinter(BaseVisitor):
 
@@ -73,6 +73,14 @@ class AstPrinter(BaseVisitor):
         for arg in snippet_call.args:
             arg.accept(self)
         self._dedent()
+        if snippet_call.indent:
+            self._writeln("indentation: ")
+            self._indent()
+            value, unit = snippet_call.indent
+            unit_str = "tabs" if unit == IndentationUnit.TABS else "spaces"
+            self._writeln(f"value: {self._expr_to_str(value)}")
+            self._writeln(f"unit: {unit_str}")
+            self._dedent()
         self._writeln()
         self._dedent()
 
