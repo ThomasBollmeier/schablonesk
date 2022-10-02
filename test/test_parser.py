@@ -37,6 +37,22 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_left_assign(self):
+        code = ":> answer <- 42"
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
+    def test_parse_right_assign(self):
+        code = ":> 42 -> answer"
+
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
     def test_parse_logical_expr(self):
         code = """
         :> cond not (a <> zero) and (b == one or c <= two)

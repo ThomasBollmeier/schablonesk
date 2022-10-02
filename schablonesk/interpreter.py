@@ -94,6 +94,12 @@ class Interpreter(BaseVisitor):
 
         self._set_ret_value(ret)
 
+    def visit_assignment(self, assignment):
+        value = self.eval(assignment.source)
+        name = assignment.target.lexeme
+        self._env.set_value(name, value)
+        self._set_ret_value("")
+
     @staticmethod
     def _eval_blocks(blocks, interpreter):
         ret = None
@@ -102,7 +108,7 @@ class Interpreter(BaseVisitor):
             if block_value is not None:
                 if ret is None:
                     ret = block_value
-                else:
+                elif block_value:
                     ret += os.linesep + block_value
         return ret
 

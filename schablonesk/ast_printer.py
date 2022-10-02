@@ -51,6 +51,13 @@ class AstPrinter(BaseVisitor):
         self._dedent()
         self._writeln("endfor")
 
+    def visit_assignment(self, assignment):
+        self._writeln("assignment")
+        self._indent()
+        self._writeln(f"source: {self._expr_to_str(assignment.source)}")
+        self._writeln(f"target: {assignment.target.lexeme}")
+        self._dedent()
+
     def visit_snippet(self, snippet):
         self._writeln(f"snippet {snippet.name.lexeme}")
         self._indent()

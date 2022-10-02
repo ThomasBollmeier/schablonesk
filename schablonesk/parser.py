@@ -46,7 +46,18 @@ class Parser(object):
         elif self._match(PASTE):
             return self._paste()
         else:
-            raise Exception("Expected Block")
+            return self._assignment()
+
+    def _assignment(self):
+        if self._match(IDENTIFIER):
+            target = self._consume(IDENTIFIER)
+            self._consume(LARROW)
+            source = self._expr()
+        else:
+            source = self._expr()
+            self._consume(RARROW)
+            target = self._consume(IDENTIFIER)
+        return Assignment(source, target)
 
     def _use(self):
         self._consume()

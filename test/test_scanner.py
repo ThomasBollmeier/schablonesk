@@ -51,6 +51,26 @@ class ScannerTest(unittest.TestCase):
         self.assertEqual(4, len(tokens))
         self.print_tokens(tokens)
 
+    def test_left_assign(self):
+        code = ":> answer <- 42"
+
+        tokens = self.scanner.scan(code)
+        self.assertEqual(3, len(tokens))
+        self.assertEqual(tokens[0].category, IDENTIFIER)
+        self.assertEqual(tokens[1].category, LARROW)
+        self.assertEqual(tokens[2].category, INT)
+        self.print_tokens(tokens)
+
+    def test_right_assign(self):
+        code = ":> 42 -> answer"
+
+        tokens = self.scanner.scan(code)
+        self.assertEqual(3, len(tokens))
+        self.assertEqual(tokens[2].category, IDENTIFIER)
+        self.assertEqual(tokens[1].category, RARROW)
+        self.assertEqual(tokens[0].category, INT)
+        self.print_tokens(tokens)
+
     @staticmethod
     def print_tokens(tokens):
         for token in tokens:

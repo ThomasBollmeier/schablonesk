@@ -289,6 +289,33 @@ class InterpreterTest(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
+    def test_left_assign(self):
+
+        global_env = Environment()
+        interpreter = Interpreter(global_env)
+        code = """:> answer <- 42
+The answer to everything is $(answer)."""
+
+        ast = self.create_parser(code).parse()
+        actual = interpreter.eval(ast)
+
+        self.assertEqual("The answer to everything is 42.", actual)
+
+        self.assertEqual(42, global_env.get_value("answer"))
+
+    def test_right_assign(self):
+        global_env = Environment()
+        interpreter = Interpreter(global_env)
+        code = """:> 42 -> answer
+The answer to everything is $(answer)."""
+
+        ast = self.create_parser(code).parse()
+        actual = interpreter.eval(ast)
+
+        self.assertEqual("The answer to everything is 42.", actual)
+
+        self.assertEqual(42, global_env.get_value("answer"))
+
     def test_snippet_call(self):
 
         global_env = Environment()

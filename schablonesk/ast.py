@@ -71,6 +71,16 @@ class SnippetCall(object):
         visitor.visit_snippet_call(self)
 
 
+class Assignment(object):
+
+    def __init__(self, source, target):
+        self.source = source
+        self.target = target
+
+    def accept(self, visitor):
+        visitor.visit_assignment(self)
+
+
 class Call(object):
 
     def __init__(self, callee, args):
