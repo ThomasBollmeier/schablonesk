@@ -319,24 +319,32 @@ The answer to everything is $(answer)."""
     def test_assignment_in_block(self):
         global_env = Environment()
         global_env.set_value("states", [False, True])
+        global_env.set_value("add1", lambda i: i + 1)
         interpreter = Interpreter(global_env)
 
-        code = """:> for state in states
+        code = """
+            :> for state in states
             :> cond 
                 :> not state
-                    :> status_text <- 'open'
+                    :> block
+                        :> status_text <- 'open'
+                        :> label <- 'set to done'
+                    :> endblock
                 :> else
-                    :> status_text <- 'done'
+                    :> block
+                        :> status_text <- 'done'
+                        :> label <- 'reopen'
+                    :> endblock
             :> endcond
-$(status_text)
+$(status_text), $(label)
 :> endfor"""
 
         ast = self.create_parser(code).parse()
         value = interpreter.eval(ast)
 
         expected = [
-            "open",
-            "done"
+            "open, set to done",
+            "done, reopen"
         ]
         actual = list(filter(lambda line: bool(line), value.split(os.linesep)))
 

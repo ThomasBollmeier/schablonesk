@@ -29,10 +29,10 @@ class Interpreter(BaseVisitor):
             usage.accept(self)
         for snippet in templ.snippets:
             snippet.accept(self)
-        for block in templ.statements:
+        for stmt in templ.statements:
             if ret:
                 ret += os.linesep
-            ret += self.eval(block)
+            ret += self.eval(stmt)
         self._set_ret_value(ret)
 
     def visit_text(self, text):
@@ -59,6 +59,17 @@ class Interpreter(BaseVisitor):
             else:
                 ret += content[search_pos:]
                 break
+        self._set_ret_value(ret)
+
+    def visit_block(self, block):
+        ret = ""
+        for stmt in block.statements:
+            value = self.eval(stmt)
+            if value:
+                if ret:
+                    ret += os.linesep + value
+                else:
+                    ret = value
         self._set_ret_value(ret)
 
     def visit_cond(self, cond_block):
