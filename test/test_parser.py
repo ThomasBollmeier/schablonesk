@@ -53,6 +53,29 @@ class ParserTest(unittest.TestCase):
 
         AstPrinter().print(ast)
 
+    def test_parse_assignment_in_block(self):
+        code = """
+        :> for state in states
+            :> cond 
+                :> state
+                    :> block
+                        :> status_text <- 'open'
+                        :> button_text <- 'Set to done'
+                    :> endblock
+                :> else
+                    :> block
+                        :> status_text <- 'done'
+                        :> button_text <- 'Reopen'
+                    :> endblock
+            :> endcond
+            $(status_text) 
+        :> endfor
+        """
+        ast = Parser(self.scanner.scan(code)).parse()
+        self.assertIsNotNone(ast)
+
+        AstPrinter().print(ast)
+
     def test_parse_logical_expr(self):
         code = """
         :> cond not (a <> zero) and (b == one or c <= two)

@@ -24,7 +24,7 @@ class Parser(object):
     def _template(self):
         usages = []
         snippets = []
-        blocks = []
+        statements = []
 
         while not self._end_of_tokens():
             if self._match(USE):
@@ -32,21 +32,30 @@ class Parser(object):
             elif self._match(SNIPPET):
                 snippets.append(self._snippet())
             else:
-                blocks.append(self._block())
+                statements.append(self._statement())
 
-        return Template(usages, snippets, blocks)
+        return Template(usages, snippets, statements)
 
-    def _block(self):
+    def _statement(self):
         if self._match(TEXT):
             return Text(self._consume())
-        elif self._match(COND):
+        if self._match(COND):
             return self._cond_block()
-        elif self._match(FOR):
+        if self._match(FOR):
             return self._for_block()
-        elif self._match(PASTE):
+        if self._match(PASTE):
             return self._paste()
-        else:
-            return self._assignment()
+        if self._match(BLOCK):
+            return self._block()
+        return self._assignment()
+
+    def _block(self):
+        statements = []
+        self._consume(BLOCK)
+        while not self._match(ENDBLOCK):
+            statements.append(self._statement())
+        self._consume(ENDBLOCK)
+        return Block(statements)
 
     def _assignment(self):
         if self._match(IDENTIFIER):
@@ -108,11 +117,11 @@ class Parser(object):
         while not self._end_of_tokens() and not self._match(RPAR):
             params.append(self._consume(IDENTIFIER))
         self._consume(RPAR)
-        blocks = []
+        statements = []
         while not self._end_of_tokens() and not self._match(ENDSNIPPET):
-            blocks.append(self._block())
+            statements.append(self._statement())
         self._consume(ENDSNIPPET)
-        return Snippet(snippet_name, params, blocks)
+        return Snippet(snippet_name, params, statements)
 
     def _for_block(self):
         self._consume()
@@ -124,13 +133,13 @@ class Parser(object):
             filter_cond = self._logical_expr()
         else:
             filter_cond = None
-        blocks = []
+        statements = []
         while not self._end_of_tokens():
             if self._match(ENDFOR):
                 break
-            blocks.append(self._block())
+            statements.append(self._statement())
         self._consume(ENDFOR)
-        return ForBlock(item_ident, list_expr, blocks, filter_cond)
+        return ForBlock(item_ident, list_expr, statements, filter_cond)
 
     def _expr(self):
         return self._logical_expr()
@@ -139,7 +148,7 @@ class Parser(object):
         self._consume()
         branches = []
         while True:
-            branches.append((self._condition(), self._block()))
+            branches.append((self._condition(), self._statement()))
             if self._match(ENDCOND):
                 self._consume()
                 break

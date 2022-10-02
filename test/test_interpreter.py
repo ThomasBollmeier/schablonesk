@@ -316,6 +316,32 @@ The answer to everything is $(answer)."""
 
         self.assertEqual(42, global_env.get_value("answer"))
 
+    def test_assignment_in_block(self):
+        global_env = Environment()
+        global_env.set_value("states", [False, True])
+        interpreter = Interpreter(global_env)
+
+        code = """:> for state in states
+            :> cond 
+                :> not state
+                    :> status_text <- 'open'
+                :> else
+                    :> status_text <- 'done'
+            :> endcond
+$(status_text)
+:> endfor"""
+
+        ast = self.create_parser(code).parse()
+        value = interpreter.eval(ast)
+
+        expected = [
+            "open",
+            "done"
+        ]
+        actual = list(filter(lambda line: bool(line), value.split(os.linesep)))
+
+        self.assertEqual(expected, actual)
+
     def test_snippet_call(self):
 
         global_env = Environment()

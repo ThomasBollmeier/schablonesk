@@ -1,9 +1,9 @@
 class Template(object):
 
-    def __init__(self, usages, snippets, blocks):
+    def __init__(self, usages, snippets, statements):
         self.usages = usages
         self.snippets = snippets
-        self.blocks = blocks
+        self.statements = statements
 
     def accept(self, visitor):
         visitor.visit_template(self)
@@ -28,6 +28,15 @@ class Text(object):
         visitor.visit_text(self)
 
 
+class Block(object):
+
+    def __init__(self, statements):
+        self.statements = statements
+
+    def accept(self, visitor):
+        visitor.visit_block(self)
+
+
 class CondBlock(object):
 
     def __init__(self, branches):
@@ -39,10 +48,10 @@ class CondBlock(object):
 
 class ForBlock(object):
 
-    def __init__(self, item_ident, list_expr, blocks, filter_cond=None):
+    def __init__(self, item_ident, list_expr, statements, filter_cond=None):
         self.item_ident = item_ident
         self.list_expr = list_expr
-        self.blocks = blocks
+        self.statements = statements
         self.filter_cond = filter_cond
 
     def accept(self, visitor):
@@ -51,10 +60,10 @@ class ForBlock(object):
 
 class Snippet(object):
 
-    def __init__(self, snippet_name, params, blocks):
+    def __init__(self, snippet_name, params, statements):
         self.name = snippet_name
         self.params = params
-        self.blocks = blocks
+        self.statements = statements
 
     def accept(self, visitor):
         visitor.visit_snippet(self)

@@ -29,7 +29,7 @@ class Interpreter(BaseVisitor):
             usage.accept(self)
         for snippet in templ.snippets:
             snippet.accept(self)
-        for block in templ.blocks:
+        for block in templ.statements:
             if ret:
                 ret += os.linesep
             ret += self.eval(block)
@@ -85,7 +85,7 @@ class Interpreter(BaseVisitor):
             for_env.set_value("is_last", idx == last_idx)
             if for_block.filter_cond and not interpreter.eval(for_block.filter_cond):
                 continue
-            block_str = self._eval_blocks(for_block.blocks, interpreter)
+            block_str = self._eval_blocks(for_block.statements, interpreter)
             if block_str is not None:
                 if ret is None:
                     ret = block_str
@@ -134,7 +134,7 @@ class Interpreter(BaseVisitor):
             snippet_env.set_value(param.lexeme, arg_values[i])
 
         interpreter = Interpreter(snippet_env, self._template_exports)
-        ret = self._eval_blocks(snippet.blocks, interpreter)
+        ret = self._eval_blocks(snippet.statements, interpreter)
 
         if snippet_call.indent:
             value_expr, unit = snippet_call.indent

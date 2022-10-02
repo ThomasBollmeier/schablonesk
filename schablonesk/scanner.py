@@ -91,7 +91,9 @@ class _CommandBlock:
             "indent": INDENT,
             "by": BY,
             "tabs": TABS,
-            "spaces": SPACES
+            "spaces": SPACES,
+            "block": BLOCK,
+            "endblock": ENDBLOCK
         }
 
     def add(self, line_num, commands):

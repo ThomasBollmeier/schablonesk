@@ -17,12 +17,19 @@ class AstPrinter(BaseVisitor):
             usage.accept(self)
         for snippet in templ.snippets:
             snippet.accept(self)
-        for block in templ.blocks:
+        for block in templ.statements:
             block.accept(self)
 
     def visit_text(self, text):
         s = text.content.strip()[:20]
         self._writeln(f"[{s}...]")
+
+    def visit_block(self, block):
+        self._writeln("block")
+        self._indent()
+        for stmt in block.statements:
+            stmt.accept(self)
+        self._dedent()
 
     def visit_cond(self, cond_block):
         self._writeln("cond")
@@ -45,7 +52,7 @@ class AstPrinter(BaseVisitor):
             self._write("filter\t")
             for_block.filter_cond.accept(self)
 
-        for block in for_block.blocks:
+        for block in for_block.statements:
             block.accept(self)
 
         self._dedent()
@@ -67,7 +74,7 @@ class AstPrinter(BaseVisitor):
             self._writeln(f"{p.lexeme} ")
         self._dedent()
         self._writeln()
-        for block in snippet.blocks:
+        for block in snippet.statements:
             block.accept(self)
         self._dedent()
         self._writeln("endsnippet")
